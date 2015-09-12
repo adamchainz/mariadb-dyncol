@@ -1,3 +1,6 @@
+# -*- coding:utf-8 -*-
+from __future__ import unicode_literals
+
 import struct
 import unittest
 
@@ -22,9 +25,13 @@ def column_create(dicty):
         encname = name.encode('utf-8')
         if isinstance(value, int):
             dtype, encvalue = encode_int(value)
+        elif isinstance(value, basestring):
+            dtype, encvalue = encode_string(value)
+        else:
+            raise TypeError("Unencodable type {}".format(type(value)))
 
         column_directory.append(struct.pack('H', name_offset))
-        column_directory.append(struct.pack('H', data_offset << 4 + dtype))
+        column_directory.append(struct.pack('H', (data_offset << 4) + dtype))
         names.append(encname)
         name_offset += len(encname)
         data.append(encvalue)
@@ -78,6 +85,11 @@ def encode_int(value):
     return 0, encoded
 
 
+def encode_string(value):
+    encoded = value.encode('utf-8')
+    return 3, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
+
+
 def hexs(byte_string):
     return ''.join(("%02X" % ord(x) for x in byte_string))
 
@@ -128,11 +140,14 @@ class ColumnCreateTests(unittest.TestCase):
             b"040100030000000000616263F6"
         )
 
-    # def test_c_128(self):
-    #     self.assert_hex({"c": 128}, b"040100010000000000630001")
+    def test_string_empty(self):
+        self.assert_hex({"a": ""}, b"0401000100000003006121")
 
-    # def test_1212(self):
-    #     self.assert_hex({"1212": 1212}, b"040100040000000000313231327809")
+    def test_string_values(self):
+        self.assert_hex({"a": "string"}, b"0401000100000003006121737472696E67")
+
+    def test_a_unicode_poo(self):
+        self.assert_hex({"a": "💩"}, b"0401000100000003006121F09F92A9")
 
 
 if __name__ == '__main__':
