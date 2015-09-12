@@ -42,13 +42,39 @@ def column_create(dicty):
 
 
 def encode_int(value):
+    """
+    Stored in the schema:
+    0: no data
+    -1: 1
+     1: 2
+    -2: 3
+     2: 4
+    ...
+    """
     if value == 0:
         encoded = b''
     else:
         encoded = abs(2 * value)
         if value < 0:
             encoded -= 1
-        encoded = struct.pack('B', encoded)
+
+        cut_last_byte = False
+        if encoded <= (2 ** 8 - 1):
+            code = 'B'
+        elif encoded <= (2 ** 16 - 1):
+            code = 'H'
+        elif encoded <= (2 ** 24 - 1):
+            # Want 3 bytes but only 4 bytes possible with struct
+            code = 'I'
+            cut_last_byte = True
+        elif encoded <= (2 ** 32 - 1):
+            code = 'I'
+        else:
+            raise ValueError("int {} too large".format(value))
+
+        encoded = struct.pack(code, encoded)
+        if cut_last_byte:
+            encoded = encoded[:-1]
     return 0, encoded
 
 
@@ -71,6 +97,15 @@ class ColumnCreateTests(unittest.TestCase):
 
     def test_a_0(self):
         self.assert_hex({"a": 0}, b"04010001000000000061")
+
+    def test_a_128(self):
+        self.assert_hex({"a": 128}, b"040100010000000000610001")
+
+    def test_a_65535(self):
+        self.assert_hex({"a": 65535}, b"04010001000000000061FEFF01")
+
+    def test_a_1048576(self):
+        self.assert_hex({"a": 1048576}, b"04010001000000000061000020")
 
     def test_c_1(self):
         self.assert_hex({"c": 1}, b"0401000100000000006302")
