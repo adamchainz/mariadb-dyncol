@@ -21,12 +21,7 @@ def column_create(dicty):
     for name, value in sorted(dicty.iteritems()):
         encname = name.encode('utf-8')
         if isinstance(value, int):
-            if value == 0:
-                encvalue = b''
-            else:
-                # wrong for negatives and 0, large numbers... eek
-                encvalue = struct.pack('B', value * 2)
-            dtype = 0
+            dtype, encvalue = encode_int(value)
 
         column_directory.append(struct.pack('H', name_offset))
         column_directory.append(struct.pack('H', data_offset << 4 + dtype))
@@ -46,6 +41,17 @@ def column_create(dicty):
     return b''.join(buf)
 
 
+def encode_int(value):
+    if value == 0:
+        encoded = b''
+    else:
+        encoded = abs(2 * value)
+        if value < 0:
+            encoded -= 1
+        encoded = struct.pack('B', encoded)
+    return 0, encoded
+
+
 def hexs(byte_string):
     return ''.join(("%02X" % ord(x) for x in byte_string))
 
@@ -56,6 +62,12 @@ class ColumnCreateTests(unittest.TestCase):
 
     def test_a_1(self):
         self.assert_hex({"a": 1}, b"0401000100000000006102")
+
+    def test_a_minus1(self):
+        self.assert_hex({"a": -1}, b"0401000100000000006101")
+
+    def test_a_minus2(self):
+        self.assert_hex({"a": -2}, b"0401000100000000006103")
 
     def test_a_0(self):
         self.assert_hex({"a": 0}, b"04010001000000000061")
