@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import date
+
 import struct
 
 import six
@@ -9,6 +11,7 @@ DYN_COL_INT = 0
 DYN_COL_UINT = 1
 DYN_COL_DOUBLE = 2
 DYN_COL_STRING = 3
+DYN_COL_DATE = 6
 DYN_COL_DYNCOL = 8
 
 
@@ -36,6 +39,8 @@ def column_create(dicty):
             dtype, encvalue = encode_float(value)
         elif isinstance(value, six.string_types):
             dtype, encvalue = encode_string(value)
+        elif isinstance(value, date):
+            dtype, encvalue = encode_date(value)
         elif isinstance(value, dict):
             dtype = DYN_COL_DYNCOL
             encvalue = column_create(value)
@@ -111,3 +116,8 @@ def encode_float(value):
 def encode_string(value):
     encoded = value.encode('utf-8')
     return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
+
+
+def encode_date(value):
+    val = value.day | value.month << 5 | value.year << 9
+    return DYN_COL_DATE, struct.pack('I', val)[:-1]

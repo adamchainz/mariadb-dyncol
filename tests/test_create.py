@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import date
+
 import pytest
 
 from .base import DyncolTestCase
@@ -91,4 +93,16 @@ class ColumnCreateTests(DyncolTestCase):
         self.assert_hex(
             {"a": 192873409809.0},
             b"040100010000000200610080885613744642"
+        )
+
+    def test_date(self):
+        self.assert_hex(
+            {"a": date(year=2015, month=1, day=1)},
+            b"0401000100000006006121BE0F"
+        )
+
+    def test_date_2(self):
+        self.assert_hex(
+            {"a": date(year=1, month=12, day=25)},
+            b"04010001000000060061990300"
         )
