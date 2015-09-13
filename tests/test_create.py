@@ -28,9 +28,19 @@ class ColumnCreateTests(DyncolTestCase):
     def test_a_1048576(self):
         self.assert_hex({"a": 1048576}, b"04010001000000000061000020")
 
+    def test_ulonglongmax(self):
+        self.assert_hex(
+            {"a": 18446744073709551615},
+            b"04010001000000010061FFFFFFFFFFFFFFFF"
+        )
+
     def test_integer_overflow(self):
         with pytest.raises(OverflowError):
-            self.assert_hex({"a": 2 ** 1000}, b"unchecked")
+            self.assert_hex({"a": 2 ** 64}, b"unchecked")
+
+    def test_integer_negative_overflow(self):
+        with pytest.raises(OverflowError):
+            self.assert_hex({"a": -(2 ** 32)}, b"unchecked")
 
     def test_c_1(self):
         self.assert_hex({"c": 1}, b"0401000100000000006302")

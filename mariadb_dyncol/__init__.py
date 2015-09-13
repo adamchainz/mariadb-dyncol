@@ -72,12 +72,13 @@ def encode_int(value):
      2: 4
     ...
     """
+    dtype = DYN_COL_INT
     if value == 0:
         encoded = b''
     else:
-        encoded = abs(2 * value)
+        encoded = 2 * value
         if value < 0:
-            encoded -= 1
+            encoded = -1 * encoded - 1
 
         cut_last_byte = False
         if encoded <= (2 ** 8 - 1):
@@ -90,13 +91,17 @@ def encode_int(value):
             cut_last_byte = True
         elif encoded <= (2 ** 32 - 1):
             code = 'I'
+        elif value <= (2 ** 64 - 1) and value > 0:
+            dtype = DYN_COL_UINT
+            code = 'Q'
+            encoded = value
         else:
             raise OverflowError("int {} too large".format(value))
 
         encoded = struct.pack(code, encoded)
         if cut_last_byte:
             encoded = encoded[:-1]
-    return DYN_COL_INT, encoded
+    return dtype, encoded
 
 
 def encode_float(value):
