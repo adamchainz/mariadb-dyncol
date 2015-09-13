@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import date, time
+from datetime import date, datetime, time
 
 import struct
 
@@ -11,6 +11,7 @@ DYN_COL_INT = 0
 DYN_COL_UINT = 1
 DYN_COL_DOUBLE = 2
 DYN_COL_STRING = 3
+DYN_COL_DATETIME = 5
 DYN_COL_DATE = 6
 DYN_COL_TIME = 7
 DYN_COL_DYNCOL = 8
@@ -40,6 +41,8 @@ def column_create(dicty):
             dtype, encvalue = encode_float(value)
         elif isinstance(value, six.string_types):
             dtype, encvalue = encode_string(value)
+        elif isinstance(value, datetime):
+            dtype, encvalue = encode_datetime(value)
         elif isinstance(value, date):
             dtype, encvalue = encode_date(value)
         elif isinstance(value, time):
@@ -119,6 +122,12 @@ def encode_float(value):
 def encode_string(value):
     encoded = value.encode('utf-8')
     return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
+
+
+def encode_datetime(value):
+    _, enc_date = encode_date(value)
+    _, enc_time = encode_time(value)
+    return DYN_COL_DATETIME, enc_date + enc_time
 
 
 def encode_date(value):
