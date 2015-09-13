@@ -6,15 +6,12 @@ import unittest
 
 
 def column_create(dicty):
-    column_count = len(dicty)
-
     buf = []
 
     flags = struct.pack('B', 4)
     buf.append(flags)
 
-    buf.append(struct.pack('H', column_count))
-
+    column_count = 0
     column_directory = []
     directory_offset = 0
     name_offset = 0
@@ -22,6 +19,9 @@ def column_create(dicty):
     data_offset = 0
     data = []
     for name, value in sorted(dicty.iteritems()):
+        if value is None:
+            continue
+
         encname = name.encode('utf-8')
         if isinstance(value, int):
             dtype, encvalue = encode_int(value)
@@ -33,6 +33,7 @@ def column_create(dicty):
         else:
             raise TypeError("Unencodable type {}".format(type(value)))
 
+        column_count += 1
         column_directory.append(struct.pack('H', name_offset))
         column_directory.append(struct.pack('H', (data_offset << 4) + dtype))
         names.append(encname)
@@ -42,6 +43,7 @@ def column_create(dicty):
 
         directory_offset += 2
 
+    buf.append(struct.pack('H', column_count))
     enc_names = b''.join(names)
     buf.append(struct.pack('H', len(enc_names)))
     buf.append(b''.join(column_directory))
@@ -151,6 +153,9 @@ class ColumnCreateTests(unittest.TestCase):
 
     def test_a_unicode_poo(self):
         self.assert_hex({"a": "💩"}, b"0401000100000003006121F09F92A9")
+
+    def test_None(self):
+        self.assert_hex({"a": None}, b"0400000000")
 
     def test_dict(self):
         self.assert_hex(
