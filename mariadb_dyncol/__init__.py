@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, time
 
 import struct
 
@@ -12,6 +12,7 @@ DYN_COL_UINT = 1
 DYN_COL_DOUBLE = 2
 DYN_COL_STRING = 3
 DYN_COL_DATE = 6
+DYN_COL_TIME = 7
 DYN_COL_DYNCOL = 8
 
 
@@ -41,6 +42,8 @@ def column_create(dicty):
             dtype, encvalue = encode_string(value)
         elif isinstance(value, date):
             dtype, encvalue = encode_date(value)
+        elif isinstance(value, time):
+            dtype, encvalue = encode_time(value)
         elif isinstance(value, dict):
             dtype = DYN_COL_DYNCOL
             encvalue = column_create(value)
@@ -121,3 +124,13 @@ def encode_string(value):
 def encode_date(value):
     val = value.day | value.month << 5 | value.year << 9
     return DYN_COL_DATE, struct.pack('I', val)[:-1]
+
+
+def encode_time(value):
+    val = (
+        value.microsecond |
+        value.second << 20 |
+        value.minute << 26 |
+        value.hour << 32
+    )
+    return DYN_COL_TIME, struct.pack('Q', val)[:6]

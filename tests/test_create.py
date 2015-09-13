@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, time
 
 import pytest
 
@@ -105,4 +105,16 @@ class ColumnCreateTests(DyncolTestCase):
         self.assert_hex(
             {"a": date(year=1, month=12, day=25)},
             b"04010001000000060061990300"
+        )
+
+    def test_time(self):
+        self.assert_hex(
+            {"a": time(hour=12, minute=2, second=3, microsecond=676767)},
+            b"040100010000000700619F533A080C00"
+        )
+
+    def test_time_2(self):
+        self.assert_hex(
+            {"a": time(hour=3, minute=59, second=59, microsecond=999999)},
+            b"040100010000000700613F42BFEF0300"
         )
