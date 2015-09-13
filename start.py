@@ -4,6 +4,11 @@ from __future__ import unicode_literals
 import struct
 import unittest
 
+DYN_COL_INT = 0
+DYN_COL_DOUBLE = 2
+DYN_COL_STRING = 3
+DYN_COL_DYNCOL = 8
+
 
 def column_create(dicty):
     buf = []
@@ -25,10 +30,12 @@ def column_create(dicty):
         encname = name.encode('utf-8')
         if isinstance(value, int):
             dtype, encvalue = encode_int(value)
+        elif isinstance(value, float):
+            dtype, encvalue = encode_float(value)
         elif isinstance(value, basestring):
             dtype, encvalue = encode_string(value)
         elif isinstance(value, dict):
-            dtype = 8
+            dtype = DYN_COL_DYNCOL
             encvalue = column_create(value)
         else:
             raise TypeError("Unencodable type {}".format(type(value)))
@@ -87,12 +94,16 @@ def encode_int(value):
         encoded = struct.pack(code, encoded)
         if cut_last_byte:
             encoded = encoded[:-1]
-    return 0, encoded
+    return DYN_COL_INT, encoded
+
+
+def encode_float(value):
+    return DYN_COL_DOUBLE, struct.pack('d', value)
 
 
 def encode_string(value):
     encoded = value.encode('utf-8')
-    return 3, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
+    return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
 
 
 def hexs(byte_string):
@@ -161,6 +172,18 @@ class ColumnCreateTests(unittest.TestCase):
         self.assert_hex(
             {"a": {"b": "c"}},
             b"04010001000000080061040100010000000300622163"
+        )
+
+    def test_float_1_0(self):
+        self.assert_hex({"a": 1.0}, b"04010001000000020061000000000000F03F")
+
+    def test_float_minus_3_415(self):
+        self.assert_hex({"a": -3.415}, b"0401000100000002006152B81E85EB510BC0")
+
+    def test_float_192873409809(self):
+        self.assert_hex(
+            {"a": 192873409809.0},
+            b"040100010000000200610080885613744642"
         )
 
 if __name__ == '__main__':
