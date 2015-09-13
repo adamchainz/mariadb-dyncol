@@ -27,6 +27,9 @@ def column_create(dicty):
             dtype, encvalue = encode_int(value)
         elif isinstance(value, basestring):
             dtype, encvalue = encode_string(value)
+        elif isinstance(value, dict):
+            dtype = 8
+            encvalue = column_create(value)
         else:
             raise TypeError("Unencodable type {}".format(type(value)))
 
@@ -149,6 +152,11 @@ class ColumnCreateTests(unittest.TestCase):
     def test_a_unicode_poo(self):
         self.assert_hex({"a": "💩"}, b"0401000100000003006121F09F92A9")
 
+    def test_dict(self):
+        self.assert_hex(
+            {"a": {"b": "c"}},
+            b"04010001000000080061040100010000000300622163"
+        )
 
 if __name__ == '__main__':
     unittest.main()
