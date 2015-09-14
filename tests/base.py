@@ -5,7 +5,7 @@ import unittest
 
 import six
 
-from mariadb_dyncol import pack
+from mariadb_dyncol import pack, unpack
 
 
 def hexs(byte_string):
@@ -19,6 +19,9 @@ def hexs(byte_string):
 
 class DyncolTestCase(unittest.TestCase):
     def assert_hex(self, dicty, hexstring):
-        created = pack(dicty)
-        assert isinstance(created, six.binary_type)
-        assert hexs(created) == hexstring
+        byte_string = pack(dicty)
+        assert isinstance(byte_string, six.binary_type)
+        assert hexs(byte_string) == hexstring
+
+        unpacked = unpack(byte_string)
+        assert unpacked == dicty

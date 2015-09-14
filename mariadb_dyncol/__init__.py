@@ -149,3 +149,55 @@ def encode_time(value):
         value.hour << 32
     )
     return DYN_COL_TIME, struct.pack('Q', val)[:6]
+
+
+def unpack(buf):
+    flags, column_count, len_names = struct.unpack_from('<BHH', buf, offset=0)
+    if flags != 4:
+        raise ValueError("Unknown dynamic columns format")
+
+    header_end = 1 + 2 + 2
+    column_directory_end = header_end + 4 * column_count
+    names_end = column_directory_end + len_names
+
+    column_directory = buf[header_end:column_directory_end + 1]
+    enc_names = buf[column_directory_end:names_end + 1]
+    data = buf[names_end:]
+
+    print(repr(buf))
+    print(repr(column_directory))
+    print(repr(enc_names))
+    print(repr(data))
+
+    names = {}
+    values = {}
+
+    last_name_offset = None
+    for i in range(column_count):
+        name_offset, data_offset_dtype = struct.unpack_from(
+            '<HH',
+            column_directory,
+            offset=i * 4
+        )
+        data_offset = data_offset_dtype >> 4
+        dtype = data_offset_dtype & 0xF
+
+        # Store *last* column's name
+        if last_name_offset is not None:
+            names[i - 1] = enc_names[last_name_offset:name_offset].decode('utf-8')
+        last_name_offset = name_offset
+
+        #
+        values[i] = -1
+
+    names[column_count - 1] = enc_names[last_name_offset:].decode('utf-8')
+
+    # join data and names
+    return {
+        names[i]: values[i]
+        for i in range(column_count)
+    }
+
+
+def decode_int(value):
+    return -1
