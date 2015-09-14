@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from datetime import date, datetime, time
+from decimal import Decimal
 
 import pytest
 
@@ -94,6 +95,10 @@ class ColumnCreateTests(DyncolTestCase):
             {"a": 192873409809.0},
             b"040100010000000200610080885613744642"
         )
+
+    def test_decimal_unsupported(self):
+        with self.assertRaises(ValueError):
+            self.assert_hex({"a": Decimal('1.3')}, b'unchecked')
 
     def test_datetime(self):
         self.assert_hex(

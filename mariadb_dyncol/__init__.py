@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from datetime import date, datetime, time
+from decimal import Decimal
 
 import struct
 
@@ -11,6 +12,7 @@ DYN_COL_INT = 0
 DYN_COL_UINT = 1
 DYN_COL_DOUBLE = 2
 DYN_COL_STRING = 3
+DYN_COL_DECIMAL = 4
 DYN_COL_DATETIME = 5
 DYN_COL_DATE = 6
 DYN_COL_TIME = 7
@@ -43,6 +45,8 @@ def column_create(dicty):
             dtype, encvalue = encode_string(value)
         elif isinstance(value, datetime):
             dtype, encvalue = encode_datetime(value)
+        elif isinstance(value, Decimal):
+            raise ValueError("Decimal objects are not currently supported")
         elif isinstance(value, date):
             dtype, encvalue = encode_date(value)
         elif isinstance(value, time):
