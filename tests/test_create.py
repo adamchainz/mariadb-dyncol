@@ -9,7 +9,7 @@ import pytest
 from .base import DyncolTestCase
 
 
-class ColumnCreateTests(DyncolTestCase):
+class PackTests(DyncolTestCase):
     def test_a_1(self):
         self.assert_hex({"a": 1}, b"0401000100000000006102")
 

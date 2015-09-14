@@ -5,12 +5,13 @@ import unittest
 
 import six
 
-from mariadb_dyncol import column_create
+from mariadb_dyncol import pack
 
 
 def hexs(byte_string):
     if six.PY3:
-        conv = lambda x: x
+        def conv(x):
+            return x
     else:
         conv = ord
     return ''.join(("%02X" % conv(x) for x in byte_string)).encode('utf-8')
@@ -18,6 +19,6 @@ def hexs(byte_string):
 
 class DyncolTestCase(unittest.TestCase):
     def assert_hex(self, dicty, hexstring):
-        created = column_create(dicty)
+        created = pack(dicty)
         assert isinstance(created, six.binary_type)
         assert hexs(created) == hexstring

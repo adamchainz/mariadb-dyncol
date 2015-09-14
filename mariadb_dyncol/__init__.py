@@ -19,12 +19,7 @@ DYN_COL_TIME = 7
 DYN_COL_DYNCOL = 8
 
 
-def column_create(dicty):
-    buf = []
-
-    flags = struct.pack('B', 4)
-    buf.append(flags)
-
+def pack(dicty):
     column_count = 0
     column_directory = []
     directory_offset = 0
@@ -53,7 +48,7 @@ def column_create(dicty):
             dtype, encvalue = encode_time(value)
         elif isinstance(value, dict):
             dtype = DYN_COL_DYNCOL
-            encvalue = column_create(value)
+            encvalue = pack(value)
         else:
             raise TypeError("Unencodable type {}".format(type(value)))
 
@@ -67,13 +62,20 @@ def column_create(dicty):
 
         directory_offset += 2
 
-    buf.append(struct.pack('H', column_count))
+    flags = 4  # means this contains named dynamic columns
     enc_names = b''.join(names)
-    buf.append(struct.pack('H', len(enc_names)))
-    buf.append(b''.join(column_directory))
-    buf.append(enc_names)
-    buf.append(b''.join(data))
 
+    buf = [
+        struct.pack(
+            '<BHH',
+            flags,
+            column_count,
+            len(enc_names)
+        ),
+    ]
+    buf.extend(column_directory)
+    buf.append(enc_names)
+    buf.extend(data)
     return b''.join(buf)
 
 
