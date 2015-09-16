@@ -160,19 +160,17 @@ def unpack(buf):
     column_directory_end = header_end + 4 * column_count
     names_end = column_directory_end + len_names
 
-    column_directory = buf[header_end:column_directory_end + 1]
-    enc_names = buf[column_directory_end:names_end + 1]
+    column_directory = buf[header_end:column_directory_end]
+    enc_names = buf[column_directory_end:names_end]
     data = buf[names_end:]
-
-    print(repr(buf))
-    print(repr(column_directory))
-    print(repr(enc_names))
-    print(repr(data))
 
     names = {}
     values = {}
 
     last_name_offset = None
+    last_data_offset = None
+    last_dtype = None
+
     for i in range(column_count):
         name_offset, data_offset_dtype = struct.unpack_from(
             '<HH',
@@ -188,9 +186,13 @@ def unpack(buf):
         last_name_offset = name_offset
 
         #
-        values[i] = -1
+        if last_data_offset is not None:
+            values[i - 1] = decode(last_dtype, data[last_data_offset:data_offset])
+        last_data_offset = data_offset
+        last_dtype = dtype
 
     names[column_count - 1] = enc_names[last_name_offset:].decode('utf-8')
+    values[column_count - 1] = decode(last_dtype, data[last_data_offset:])
 
     # join data and names
     return {
@@ -199,5 +201,29 @@ def unpack(buf):
     }
 
 
-def decode_int(value):
-    return -1
+def decode(dtype, encvalue):
+    if dtype == DYN_COL_INT:
+        return decode_int(encvalue)
+    else:
+        raise ValueError()
+
+
+def decode_int(encvalue):
+    if len(encvalue) == 1:
+        code = 'B'
+    elif len(encvalue) == 2:
+        code = 'H'
+    elif len(encvalue) == 3:
+        code = 'I'
+        encvalue += b'\x00'
+    elif len(encvalue) == 4:
+        code = 'I'
+    else:
+        raise ValueError()
+
+    dvalue, = struct.unpack(code, encvalue)
+
+    value = dvalue >> 1
+    if dvalue & 1:
+        value = -1 * value - 1
+    return value
