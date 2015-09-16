@@ -210,6 +210,12 @@ def decode(dtype, encvalue):
         return decode_double(encvalue)
     elif dtype == DYN_COL_STRING:
         return decode_string(encvalue)
+    elif dtype == DYN_COL_DATETIME:
+        return decode_datetime(encvalue)
+    elif dtype == DYN_COL_DATE:
+        return decode_date(encvalue)
+    elif dtype == DYN_COL_TIME:
+        return decode_time(encvalue)
     elif dtype == DYN_COL_DYNCOL:
         return unpack(encvalue)
     else:
@@ -253,3 +259,28 @@ def decode_string(encvalue):
     if not encvalue.startswith(b'\x21'):
         raise ValueError("Can only decode strings with MySQL charset utf8mb4")
     return encvalue[1:].decode('utf-8')
+
+
+def decode_datetime(encvalue):
+    d = decode_date(encvalue[:3])
+    t = decode_time(encvalue[3:])
+    return datetime.combine(d, t)
+
+
+def decode_date(encvalue):
+    val, = struct.unpack('I', encvalue + b'\x00')
+    return date(
+        day=val & 0x1F,
+        month=(val >> 5) & 0xF,
+        year=(val >> 9)
+    )
+
+
+def decode_time(encvalue):
+    val, = struct.unpack('Q', encvalue + b'\x00\x00')
+    return time(
+        microsecond=val & 0xFFFFF,
+        second=(val >> 20) & 0x3F,
+        minute=(val >> 26) & 0x3F,
+        hour=(val >> 32)
+    )
