@@ -206,12 +206,18 @@ def decode(dtype, encvalue):
         return decode_int(encvalue)
     elif dtype == DYN_COL_UINT:
         return decode_uint(encvalue)
+    elif dtype == DYN_COL_STRING:
+        return decode_string(encvalue)
+    elif dtype == DYN_COL_DYNCOL:
+        return unpack(encvalue)
     else:
         raise ValueError()
 
 
 def decode_int(encvalue):
-    if len(encvalue) == 1:
+    if len(encvalue) == 0:
+        return 0
+    elif len(encvalue) == 1:
         code = 'B'
     elif len(encvalue) == 2:
         code = 'H'
@@ -234,3 +240,9 @@ def decode_int(encvalue):
 def decode_uint(encvalue):
     value, = struct.unpack('Q', encvalue)
     return value
+
+
+def decode_string(encvalue):
+    if not encvalue.startswith(b'\x21'):
+        raise ValueError("Can only decode strings with MySQL charset utf8mb4")
+    return encvalue[1:].decode('utf-8')
