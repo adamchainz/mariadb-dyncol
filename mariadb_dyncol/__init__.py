@@ -206,6 +206,8 @@ def decode(dtype, encvalue):
         return decode_int(encvalue)
     elif dtype == DYN_COL_UINT:
         return decode_uint(encvalue)
+    elif dtype == DYN_COL_DOUBLE:
+        return decode_double(encvalue)
     elif dtype == DYN_COL_STRING:
         return decode_string(encvalue)
     elif dtype == DYN_COL_DYNCOL:
@@ -239,6 +241,11 @@ def decode_int(encvalue):
 
 def decode_uint(encvalue):
     value, = struct.unpack('Q', encvalue)
+    return value
+
+
+def decode_double(encvalue):
+    value, = struct.unpack('d', encvalue)
     return value
 
 
