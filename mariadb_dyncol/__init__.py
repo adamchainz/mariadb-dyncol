@@ -204,6 +204,8 @@ def unpack(buf):
 def decode(dtype, encvalue):
     if dtype == DYN_COL_INT:
         return decode_int(encvalue)
+    elif dtype == DYN_COL_UINT:
+        return decode_uint(encvalue)
     else:
         raise ValueError()
 
@@ -226,4 +228,9 @@ def decode_int(encvalue):
     value = dvalue >> 1
     if dvalue & 1:
         value = -1 * value - 1
+    return value
+
+
+def decode_uint(encvalue):
+    value, = struct.unpack('Q', encvalue)
     return value
