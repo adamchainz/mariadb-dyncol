@@ -24,4 +24,6 @@ class DyncolTestCase(unittest.TestCase):
         assert hexs(byte_string) == hexstring
 
         unpacked = unpack(byte_string)
-        assert unpacked == dicty
+        # Nones are not stored and thus we shouldn't compare them
+        dicty_stored = {k: v for k, v in dicty.items() if v is not None}
+        assert unpacked == dicty_stored

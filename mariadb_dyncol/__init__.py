@@ -156,6 +156,9 @@ def unpack(buf):
     if flags != 4:
         raise ValueError("Unknown dynamic columns format")
 
+    if column_count == 0:
+        return {}
+
     header_end = 1 + 2 + 2
     column_directory_end = header_end + 4 * column_count
     names_end = column_directory_end + len_names

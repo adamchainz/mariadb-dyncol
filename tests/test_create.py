@@ -10,6 +10,9 @@ from .base import DyncolTestCase
 
 
 class PackTests(DyncolTestCase):
+    def test_empty(self):
+        self.assert_hex({}, b"0400000000")
+
     def test_a_1(self):
         self.assert_hex({"a": 1}, b"0401000100000000006102")
 
