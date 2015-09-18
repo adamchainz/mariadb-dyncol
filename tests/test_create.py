@@ -140,3 +140,35 @@ class PackTests(DyncolTestCase):
             {"a": time(hour=3, minute=59, second=59, microsecond=999999)},
             b"040100010000000700613F42BFEF0300"
         )
+
+
+class MariaDBTests(DyncolTestCase):
+    def test_1(self):
+        self.assert_hex(
+            {'адын': 1212},
+            b'040100080000000000D0B0D0B4D18BD0BD7809'
+        )
+
+    def test_2(self):
+        self.assert_hex(
+            {"1212": 1212},
+            b'040100040000000000313231327809'
+        )
+
+    def test_4(self):
+        self.assert_hex(
+            {"1212": 2, "www": 3},
+            b'04020007000000000003001000777777313231320604',
+        )
+
+    def test_5(self):
+        self.assert_hex(
+            {"1": "AAA", "b": "BBB"},
+            b'0402000200000003000100430031622141414121424242',
+        )
+
+    def test_6(self):
+        self.assert_hex(
+            {'a' * 255: 1},
+            b'040100FF0000000000' + b''.join([b'61'] * 255) + b'02'
+        )

@@ -27,7 +27,9 @@ def pack(dicty):
     names = []
     data_offset = 0
     data = []
-    for name, value in sorted(six.iteritems(dicty)):
+
+    for name in sorted(six.iterkeys(dicty), key=name_order):
+        value = dicty[name]
         if value is None:
             continue
 
@@ -77,6 +79,11 @@ def pack(dicty):
     buf.append(enc_names)
     buf.extend(data)
     return b''.join(buf)
+
+
+def name_order(name):
+    # Keys are ordered by name length then name
+    return len(name), name
 
 
 def encode_int(value):
