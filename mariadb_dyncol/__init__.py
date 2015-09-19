@@ -18,6 +18,21 @@ DYN_COL_DATE = 6
 DYN_COL_TIME = 7
 DYN_COL_DYNCOL = 8
 
+MAX_TOTAL_NAME_LENGTH = 65535
+MAX_NAME_LENGTH = (MAX_TOTAL_NAME_LENGTH // 4)
+
+
+class DynColLimitError(Exception):
+    """
+    Indicates that some limit has been reached
+    """
+
+
+class DynColTypeError(TypeError):
+    """
+    Indicates that a type is wrong
+    """
+
 
 def pack(dicty):
     column_count = 0
@@ -27,6 +42,7 @@ def pack(dicty):
     names = []
     data_offset = 0
     data = []
+    total_encname_length = 0
 
     for name in sorted(six.iterkeys(dicty), key=name_order):
         value = dicty[name]
@@ -34,6 +50,12 @@ def pack(dicty):
             continue
 
         encname = name.encode('utf-8')
+        if len(encname) > MAX_NAME_LENGTH:
+            raise DynColLimitError("Key too long: " + name)
+        total_encname_length += len(encname)
+        if total_encname_length > MAX_TOTAL_NAME_LENGTH:
+            raise DynColLimitError("Total length of keys too long")
+
         if isinstance(value, six.integer_types):
             dtype, encvalue = encode_int(value)
         elif isinstance(value, float):
@@ -52,7 +74,7 @@ def pack(dicty):
             dtype = DYN_COL_DYNCOL
             encvalue = pack(value)
         else:
-            raise TypeError("Unencodable type {}".format(type(value)))
+            raise DynColTypeError("Unencodable type {}".format(type(value)))
 
         column_count += 1
         column_directory.append(struct.pack('H', name_offset))

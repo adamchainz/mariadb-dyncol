@@ -6,7 +6,10 @@ from decimal import Decimal
 
 import pytest
 
-from .base import DyncolTestCase
+from mariadb_dyncol import (
+    DynColLimitError, DynColTypeError, MAX_NAME_LENGTH, pack,
+)
+from .base import DyncolTestCase, hexs
 
 
 class PackTests(DyncolTestCase):
@@ -167,8 +170,67 @@ class MariaDBTests(DyncolTestCase):
             b'0402000200000003000100430031622141414121424242',
         )
 
-    def test_6(self):
+    def test_255_chars(self):
         self.assert_hex(
             {'a' * 255: 1},
             b'040100FF0000000000' + b''.join([b'61'] * 255) + b'02'
         )
+
+    def test_MAX_NAME_LENGTH_chars(self):
+        long_key = 'a' * MAX_NAME_LENGTH
+        long_key_encoded = long_key.encode('utf-8')
+        self.assert_hex(
+            {long_key: 1},
+            b'040100FF3F00000000' + hexs(long_key_encoded) + b'02'
+        )
+
+    def test_name_overflow(self):
+        with pytest.raises(DynColLimitError):
+            pack({'a' * (MAX_NAME_LENGTH + 1): 1})
+
+    def test_name_unicode_fits(self):
+        long_key = ('💩' * 4095) + ('a' * 3)  # MAX_NAME_LENGTH bytes
+        long_key_encoded = long_key.encode('utf8')
+        self.assert_hex(
+            {long_key: 1},
+            b'040100FF3F00000000' + hexs(long_key_encoded) + b'02'
+        )
+
+    def test_name_unicode_overflow(self):
+        long_key = ('💩' * 4095) + ('a' * 4)
+        with pytest.raises(DynColLimitError):
+            pack({long_key: 1})
+
+    def test_total_name_length(self):
+        long_key = 'a' * (MAX_NAME_LENGTH - 1)
+        # No exception
+        pack({
+            long_key + '1': 1,
+            long_key + '2': 1,
+            long_key + '3': 1,
+            long_key + '4': 1,
+            'abc': 1    # Total up to here = TOTAL_MAX_NAME_LENGTH
+        })
+
+    def test_total_name_length_overflow(self):
+        long_key = 'a' * (MAX_NAME_LENGTH - 1)
+        with pytest.raises(DynColLimitError):
+            pack({
+                long_key + '1': 1,
+                long_key + '2': 1,
+                long_key + '3': 1,
+                long_key + '4': 1,
+                'abc': 1,  # Total up to here = TOTAL_MAX_NAME_LENGTH
+                'a': 1,
+            })
+
+    def test_8(self):
+        self.assert_hex(
+            {'falafel': {'a': 1}, 'fala': {'b': 't'}},
+            b'0402000B00000008000400C80066616C6166616C6166656C040100010000000'
+            b'3006221740401000100000000006102'
+        )
+
+    def test_unknown_type(self):
+        with pytest.raises(DynColTypeError):
+            pack({'key': ['lists', 'not', 'supported']})
