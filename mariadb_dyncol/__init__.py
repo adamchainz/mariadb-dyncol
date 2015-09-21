@@ -112,7 +112,7 @@ def pack(dicty):
     if not odd_sized_datacode:
         buf.append(
             struct.pack(
-                '<' + ('H' + coldir_size_code) * (len(column_directory) / 2),
+                '<' + ('H' + coldir_size_code) * (len(column_directory) // 2),
                 *column_directory
             )
         )
