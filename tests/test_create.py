@@ -75,6 +75,9 @@ class PackTests(DyncolTestCase):
     def test_string_empty(self):
         self.assert_hex({"a": ""}, b"0401000100000003006121")
 
+    def test_empty_key(self):
+        self.assert_hex({"": ""}, b"04010000000000030021")
+
     def test_string_values(self):
         self.assert_hex({"a": "string"}, b"0401000100000003006121737472696E67")
 
@@ -83,6 +86,27 @@ class PackTests(DyncolTestCase):
 
     def test_unicode_poo_1(self):
         self.assert_hex({"💩": 1}, b"040100040000000000F09F92A902")
+
+    def test_large_string_data(self):
+        self.assert_hex(
+            {'a': 'a' * (2 ** 12)},
+            b'050100010000000300006121616161',
+            hexstring_cut=True
+        )
+
+    def test_large_string_data_2(self):
+        self.assert_hex(
+            {'a': 'a' * (2 ** 13), 'b': 1},
+            b'0502000200000003000001001000026162216161',
+            hexstring_cut=True
+        )
+
+    def test_huge_string_data(self):
+        self.assert_hex(
+            {'a': 'a' * (2 ** 20)},
+            b'06010001000000030000006121616161',
+            hexstring_cut=True
+        )
 
     def test_None(self):
         self.assert_hex({"a": None}, b"0400000000")

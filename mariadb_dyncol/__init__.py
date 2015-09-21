@@ -84,8 +84,8 @@ def pack(dicty):
             raise DynColTypeError("Unencodable type {}".format(type(value)))
 
         column_count += 1
-        column_directory.append(struct.pack('H', name_offset))
-        column_directory.append(struct.pack('H', (data_offset << 4) + dtype))
+        column_directory.append(name_offset)
+        column_directory.append((data_offset << 4) + dtype)
         names.append(encname)
         name_offset += len(encname)
         data.append(encvalue)
@@ -93,7 +93,12 @@ def pack(dicty):
 
         directory_offset += 2
 
-    flags = 4  # means this contains named dynamic columns
+    data_size_flag, coldir_size_code, odd_sized_datacode = data_size(data)
+
+    flags = (
+        4 |  # means this contains named dynamic columns
+        data_size_flag
+    )
     enc_names = b''.join(names)
 
     buf = [
@@ -104,7 +109,22 @@ def pack(dicty):
             len(enc_names)
         ),
     ]
-    buf.extend(column_directory)
+    if not odd_sized_datacode:
+        buf.append(
+            struct.pack(
+                '<' + ('H' + coldir_size_code) * (len(column_directory) / 2),
+                *column_directory
+            )
+        )
+    else:
+        for i, val in enumerate(column_directory):
+            if i % 2 == 0:
+                # name_offset
+                buf.append(struct.pack('<H', val))
+            else:
+                # data_offset + dtype, have to cut last byte
+                val = struct.pack('<' + coldir_size_code, val)
+                buf.append(val[:-1])
     buf.append(enc_names)
     buf.extend(data)
     return b''.join(buf)
@@ -113,6 +133,18 @@ def pack(dicty):
 def name_order(name):
     # Keys are ordered by name length then name
     return len(name), name
+
+
+def data_size(data):
+    data_len = sum(len(d) for d in data)
+    if data_len <= 2 ** 12:
+        return 0, 'H', False
+    elif data_len < 2 ** 20:
+        return 1, 'L', True
+    elif data_len < 2 ** 28:
+        return 2, 'L', False
+    else:
+        raise ValueError("Too much data")
 
 
 def encode_int(value):
@@ -198,14 +230,15 @@ def encode_time(value):
 
 def unpack(buf):
     flags, column_count, len_names = struct.unpack_from('<BHH', buf, offset=0)
-    if flags != 4:
+    data_offset_code, coldata_size, data_offset_mask = decode_data_size(flags)
+    if (flags & 0xFC) != 4:
         raise ValueError("Unknown dynamic columns format")
 
     if column_count == 0:
         return {}
 
     header_end = 1 + 2 + 2
-    column_directory_end = header_end + 4 * column_count
+    column_directory_end = header_end + coldata_size * column_count
     names_end = column_directory_end + len_names
 
     column_directory = buf[header_end:column_directory_end]
@@ -220,11 +253,25 @@ def unpack(buf):
     last_dtype = None
 
     for i in range(column_count):
-        name_offset, data_offset_dtype = struct.unpack_from(
-            '<HH',
-            column_directory,
-            offset=i * 4
-        )
+        if coldata_size % 2 == 0:
+            name_offset, data_offset_dtype = struct.unpack_from(
+                '<H' + data_offset_code,
+                column_directory,
+                offset=i * coldata_size
+            )
+        else:
+            name_offset, = struct.unpack_from(
+                '<H',
+                column_directory,
+                offset=i * coldata_size
+            )
+            # can't struct.unpack the 3 bytes so hack around
+            dodt_bytes = column_directory[(i * coldata_size + 2):
+                                          (i * coldata_size + 5)] + b'\x00'
+            data_offset_dtype, = struct.unpack('<' + data_offset_code,
+                                               dodt_bytes)
+
+        data_offset_dtype &= data_offset_mask
         data_offset = data_offset_dtype >> 4
         dtype = data_offset_dtype & 0xF
 
@@ -247,6 +294,18 @@ def unpack(buf):
         names[i]: values[i]
         for i in range(column_count)
     }
+
+
+def decode_data_size(flags):
+    t = flags & 0x03
+    if t == 0:
+        return 'H', 4, 0xFFFF
+    elif t == 1:
+        return 'L', 5, 0xFFFFFF
+    elif t == 2:
+        return 'L', 6, 0xFFFFFFFF
+    else:
+        raise ValueError("Unknown dynamic columns format")
 
 
 def decode(dtype, encvalue):
