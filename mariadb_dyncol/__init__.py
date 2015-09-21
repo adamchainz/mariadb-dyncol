@@ -214,6 +214,8 @@ def encode_datetime(value):
 
 
 def encode_date(value):
+    # We don't need any validation since datetime.date is more limited than the
+    # MySQL format
     val = value.day | value.month << 5 | value.year << 9
     return DYN_COL_DATE, struct.pack('I', val)[:-1]
 
