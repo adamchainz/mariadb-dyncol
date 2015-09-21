@@ -81,6 +81,9 @@ class PackTests(DyncolTestCase):
     def test_a_unicode_poo(self):
         self.assert_hex({"a": "💩"}, b"0401000100000003006121F09F92A9")
 
+    def test_unicode_poo_1(self):
+        self.assert_hex({"💩": 1}, b"040100040000000000F09F92A902")
+
     def test_None(self):
         self.assert_hex({"a": None}, b"0400000000")
 
