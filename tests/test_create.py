@@ -102,9 +102,11 @@ class PackTests(DyncolTestCase):
             b"040100010000000200610080885613744642"
         )
 
-    def test_decimal_unsupported(self):
-        with self.assertRaises(ValueError):
-            self.assert_hex({"a": Decimal('1.3')}, b'unchecked')
+    def test_decimal_1(self):
+        self.assert_hex(
+            {'a': Decimal('1')},
+            b'04010001000000040061090080000001'
+        )
 
     def test_datetime(self):
         self.assert_hex(

@@ -65,7 +65,7 @@ def pack(dicty):
         elif isinstance(value, datetime):
             dtype, encvalue = encode_datetime(value)
         elif isinstance(value, Decimal):
-            raise ValueError("Decimal objects are not currently supported")
+            dtype, encvalue = encode_decimal(value)
         elif isinstance(value, date):
             dtype, encvalue = encode_date(value)
         elif isinstance(value, time):
@@ -159,6 +159,13 @@ def encode_string(value):
     return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
 
 
+def encode_decimal(value):
+    value = int(value)
+    value |= 0x80000000  # Flip the top bit
+    encvalue = struct.pack('>I', value)
+    return DYN_COL_DECIMAL, b'\x09\x00' + encvalue
+
+
 def encode_datetime(value):
     _, enc_date = encode_date(value)
     _, enc_time = encode_time(value)
@@ -242,6 +249,8 @@ def decode(dtype, encvalue):
         return decode_double(encvalue)
     elif dtype == DYN_COL_STRING:
         return decode_string(encvalue)
+    elif dtype == DYN_COL_DECIMAL:
+        return decode_decimal(encvalue)
     elif dtype == DYN_COL_DATETIME:
         return decode_datetime(encvalue)
     elif dtype == DYN_COL_DATE:
@@ -291,6 +300,13 @@ def decode_string(encvalue):
     if not encvalue.startswith(b'\x21'):
         raise ValueError("Can only decode strings with MySQL charset utf8mb4")
     return encvalue[1:].decode('utf-8')
+
+
+def decode_decimal(encvalue):
+    encvalue = encvalue[2:]  # cut off '\x09\x00'
+    value, = struct.unpack('>I', encvalue)
+    value ^= 0x80000000
+    return Decimal(value)
 
 
 def decode_datetime(encvalue):
