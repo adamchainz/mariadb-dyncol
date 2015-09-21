@@ -7,7 +7,7 @@ from decimal import Decimal
 import pytest
 
 from mariadb_dyncol import (
-    DynColLimitError, DynColTypeError, MAX_NAME_LENGTH, pack,
+    DynColLimitError, DynColTypeError, DynColValueError, MAX_NAME_LENGTH, pack,
 )
 from .base import DyncolTestCase, hexs
 
@@ -104,6 +104,14 @@ class PackTests(DyncolTestCase):
             {"a": 192873409809.0},
             b"040100010000000200610080885613744642"
         )
+
+    def test_float_nan_not_stored(self):
+        with pytest.raises(DynColValueError):
+            pack({"a": float('nan')})
+
+    def test_float_inf_not_stored(self):
+        with pytest.raises(DynColValueError):
+            pack({"a": float('inf')})
 
     def test_decimal_1(self):
         self.assert_hex(

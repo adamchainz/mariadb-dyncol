@@ -18,12 +18,13 @@ def hexs(byte_string):
 
 
 class DyncolTestCase(unittest.TestCase):
-    def assert_hex(self, dicty, hexstring):
+    def assert_hex(self, dicty, hexstring, expected=None):
         byte_string = pack(dicty)
         assert isinstance(byte_string, six.binary_type)
         assert hexs(byte_string) == hexstring
 
         unpacked = unpack(byte_string)
         # Nones are not stored and thus we shouldn't compare them
-        dicty_stored = {k: v for k, v in dicty.items() if v is not None}
-        assert unpacked == dicty_stored
+        if expected is None:
+            expected = {k: v for k, v in dicty.items() if v is not None}
+        assert unpacked == expected

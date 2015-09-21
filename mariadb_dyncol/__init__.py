@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from datetime import date, datetime, time
 from decimal import Decimal
+from math import isinf, isnan
 
 import struct
 
@@ -31,6 +32,12 @@ class DynColLimitError(Exception):
 class DynColTypeError(TypeError):
     """
     Indicates that a type is wrong
+    """
+
+
+class DynColValueError(ValueError):
+    """
+    Indicates that a value is wrong
     """
 
 
@@ -151,6 +158,8 @@ def encode_int(value):
 
 
 def encode_float(value):
+    if isnan(value) or isinf(value):
+        raise DynColValueError("Float value not encodeable: {}".format(value))
     return DYN_COL_DOUBLE, struct.pack('d', value)
 
 
