@@ -181,7 +181,7 @@ def encode_int(value):
             code = 'Q'
             encoded = value
         else:
-            raise OverflowError("int {} too large".format(value))
+            raise DynColValueError("int {} too large".format(value))
 
         encoded = struct.pack(code, encoded)
         if cut_last_byte:

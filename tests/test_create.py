@@ -44,11 +44,11 @@ class PackTests(DyncolTestCase):
         )
 
     def test_integer_overflow(self):
-        with pytest.raises(OverflowError):
+        with pytest.raises(DynColValueError):
             self.assert_hex({"a": 2 ** 64}, b"unchecked")
 
     def test_integer_negative_overflow(self):
-        with pytest.raises(OverflowError):
+        with pytest.raises(DynColValueError):
             self.assert_hex({"a": -(2 ** 32)}, b"unchecked")
 
     def test_c_1(self):

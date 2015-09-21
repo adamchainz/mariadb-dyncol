@@ -2,13 +2,15 @@ import os
 from copy import deepcopy
 from math import isnan, isinf
 
-from hypothesis import Settings, given
+from hypothesis import Settings, assume, given
 from hypothesis.extra.datetime import datetimes
 from hypothesis.strategies import (
     dictionaries, text, integers, floats, recursive
 )
 
-from mariadb_dyncol import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH, pack, unpack
+from mariadb_dyncol import (
+    DynColValueError, MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH, pack, unpack
+)
 
 
 Settings.default.max_examples = os.getenv('MAX_EXAMPLES', 100)
@@ -51,7 +53,10 @@ def test_ints(data):
 
 @given(valid_dictionaries(valid_keys, valid_floats))
 def test_floats(data):
-    assert unpack(pack(data)) == data
+    try:
+        assert unpack(pack(data)) == data
+    except DynColValueError:
+        assume(False)
 
 
 @given(valid_dictionaries(valid_keys, text()))
@@ -83,4 +88,7 @@ recursive_values = recursive(
 
 @given(valid_dictionaries(valid_keys, recursive_values))
 def test_recursively_defined(data):
-    assert unpack(pack(data)) == data
+    try:
+        assert unpack(pack(data)) == data
+    except DynColValueError:
+        assume(False)
