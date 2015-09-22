@@ -42,6 +42,9 @@ class DynColValueError(ValueError):
 
 
 def pack(dicty):
+    """
+    Convert a mapping into the MariaDB dynamic columns format
+    """
     column_count = 0
     column_directory = []
     directory_offset = 0
@@ -231,6 +234,9 @@ def encode_time(value):
 
 
 def unpack(buf):
+    """
+    Convert MariaDB dynamic columns data in a byte string into a dict
+    """
     flags, column_count, len_names = struct.unpack_from('<BHH', buf, offset=0)
     data_offset_code, coldata_size, data_offset_mask = decode_data_size(flags)
     if (flags & 0xFC) != 4:
@@ -279,12 +285,15 @@ def unpack(buf):
 
         # Store *last* column's name
         if last_name_offset is not None:
-            names[i - 1] = enc_names[last_name_offset:name_offset].decode('utf-8')
+            names[i - 1] = (
+                enc_names[last_name_offset:name_offset].decode('utf-8')
+            )
         last_name_offset = name_offset
 
         #
         if last_data_offset is not None:
-            values[i - 1] = decode(last_dtype, data[last_data_offset:data_offset])
+            values[i - 1] = decode(last_dtype,
+                                   data[last_data_offset:data_offset])
         last_data_offset = data_offset
         last_dtype = dtype
 
