@@ -204,10 +204,22 @@ def encode_string(value):
 
 
 def encode_decimal(value):
-    value = int(value)
-    value |= 0x80000000  # Flip the top bit
-    encvalue = struct.pack('>I', value)
-    return DYN_COL_DECIMAL, b'\x09\x00' + encvalue
+    buf = bytearray()
+    intg = int(value)
+    intg_digits = 9
+    buf.extend(struct.pack('>I', intg))
+
+    frac = value - intg
+    if frac:
+        frac_digits = 1
+        frac_piece = int(str(frac)[2:])  # ugh
+        buf.extend(struct.pack('B', frac_piece))
+    else:
+        frac_digits = 0
+
+    header = struct.pack('>BB', intg_digits, frac_digits)
+    buf[0] |= 0x80  # Flip the top bit
+    return DYN_COL_DECIMAL, header + bytes(buf)
 
 
 def encode_datetime(value):
@@ -382,10 +394,14 @@ def decode_string(encvalue):
 
 
 def decode_decimal(encvalue):
-    encvalue = encvalue[2:]  # cut off '\x09\x00'
-    value, = struct.unpack('>I', encvalue)
-    value ^= 0x80000000
-    return Decimal(value)
+    num_intg, num_frac = struct.unpack('>BB', encvalue[:2])
+    intg, = struct.unpack('>I', encvalue[2:6])
+    intg ^= 0x80000000
+    if num_frac == 0:
+        frac = 0
+    else:
+        frac, = struct.unpack('>B', encvalue[6:])
+    return Decimal(str(intg) + '.' + str(frac))
 
 
 def decode_datetime(encvalue):

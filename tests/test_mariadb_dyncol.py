@@ -164,6 +164,14 @@ def test_decimal_1():
     check({'a': Decimal('1')}, b'04010001000000040061090080000001')
 
 
+def test_decimal_123456789():
+    check({'a': Decimal('123456789')}, b'040100010000000400610900875BCD15')
+
+
+def test_decimal_123456789_5():
+    check({'a': Decimal('123456789.5')}, b'040100010000000400610901875BCD1505')
+
+
 def test_datetime():
     check(
         {"a": datetime(year=1989, month=10, day=4,
