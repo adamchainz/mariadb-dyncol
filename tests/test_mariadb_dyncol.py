@@ -7,9 +7,10 @@ from decimal import Decimal
 import pytest
 
 from mariadb_dyncol import (
-    DynColLimitError, DynColTypeError, DynColValueError, MAX_NAME_LENGTH, pack,
+    DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError,
+    MAX_NAME_LENGTH, pack, unpack,
 )
-from .base import check, hexs
+from .base import check, hexs, unhexs
 
 
 def test_empty():
@@ -160,16 +161,28 @@ def test_float_inf_not_stored():
         pack({"a": float('inf')})
 
 
-def test_decimal_1():
-    check({'a': Decimal('1')}, b'04010001000000040061090080000001')
+def test_pack_Decimal_not_implemented():
+    with pytest.raises(DynColNotSupported):
+        pack({'a': Decimal(1)})
 
 
-def test_decimal_123456789():
-    check({'a': Decimal('123456789')}, b'040100010000000400610900875BCD15')
+def test_unpack_Decimal_not_implemented():
+    with pytest.raises(DynColNotSupported):
+        # Contains Decimal 1
+        unpack(unhexs(b'04010001000000040061090080000001'))
 
 
-def test_decimal_123456789_5():
-    check({'a': Decimal('123456789.5')}, b'040100010000000400610901875BCD1505')
+# def test_decimal_1():
+#     check({'a': Decimal('1')}, b'04010001000000040061090080000001')
+
+
+# def test_decimal_123456789():
+#     check({'a': Decimal('123456789')}, b'040100010000000400610900875BCD15')
+
+
+# def test_decimal_123456789_5():
+#     check({'a': Decimal('123456789.5')},
+#            b'040100010000000400610901875BCD1505')
 
 
 def test_datetime():

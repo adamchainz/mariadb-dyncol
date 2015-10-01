@@ -41,6 +41,12 @@ class DynColValueError(ValueError):
     """
 
 
+class DynColNotSupported(Exception):
+    """
+    Indicates a limitation in this implementation
+    """
+
+
 def pack(dicty):
     """
     Convert a mapping into the MariaDB dynamic columns format
@@ -75,7 +81,8 @@ def pack(dicty):
         elif isinstance(value, datetime):
             dtype, encvalue = encode_datetime(value)
         elif isinstance(value, Decimal):
-            dtype, encvalue = encode_decimal(value)
+            raise DynColNotSupported("Can't encode Decimal values currently")
+            # dtype, encvalue = encode_decimal(value)
         elif isinstance(value, date):
             dtype, encvalue = encode_date(value)
         elif isinstance(value, time):
@@ -203,23 +210,23 @@ def encode_string(value):
     return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
 
 
-def encode_decimal(value):
-    buf = bytearray()
-    intg = int(value)
-    intg_digits = 9
-    buf.extend(struct.pack('>I', intg))
+# def encode_decimal(value):
+#     buf = bytearray()
+#     intg = int(value)
+#     intg_digits = 9
+#     buf.extend(struct.pack('>I', intg))
 
-    frac = value - intg
-    if frac:
-        frac_digits = 1
-        frac_piece = int(str(frac)[2:])  # ugh
-        buf.extend(struct.pack('B', frac_piece))
-    else:
-        frac_digits = 0
+#     frac = value - intg
+#     if frac:
+#         frac_digits = 1
+#         frac_piece = int(str(frac)[2:])  # ugh
+#         buf.extend(struct.pack('B', frac_piece))
+#     else:
+#         frac_digits = 0
 
-    header = struct.pack('>BB', intg_digits, frac_digits)
-    buf[0] |= 0x80  # Flip the top bit
-    return DYN_COL_DECIMAL, header + bytes(buf)
+#     header = struct.pack('>BB', intg_digits, frac_digits)
+#     buf[0] |= 0x80  # Flip the top bit
+#     return DYN_COL_DECIMAL, header + bytes(buf)
 
 
 def encode_datetime(value):
@@ -341,7 +348,8 @@ def decode(dtype, encvalue):
     elif dtype == DYN_COL_STRING:
         return decode_string(encvalue)
     elif dtype == DYN_COL_DECIMAL:
-        return decode_decimal(encvalue)
+        raise DynColNotSupported("Can't decode Decimal values currently")
+        # return decode_decimal(encvalue)
     elif dtype == DYN_COL_DATETIME:
         return decode_datetime(encvalue)
     elif dtype == DYN_COL_DATE:
@@ -389,19 +397,21 @@ def decode_double(encvalue):
 
 def decode_string(encvalue):
     if not encvalue.startswith(b'\x21'):
-        raise ValueError("Can only decode strings with MySQL charset utf8mb4")
+        raise DynColNotSupported(
+            "Can only decode strings with MySQL charset utf8mb4"
+        )
     return encvalue[1:].decode('utf-8')
 
 
-def decode_decimal(encvalue):
-    num_intg, num_frac = struct.unpack('>BB', encvalue[:2])
-    intg, = struct.unpack('>I', encvalue[2:6])
-    intg ^= 0x80000000
-    if num_frac == 0:
-        frac = 0
-    else:
-        frac, = struct.unpack('>B', encvalue[6:])
-    return Decimal(str(intg) + '.' + str(frac))
+# def decode_decimal(encvalue):
+#     num_intg, num_frac = struct.unpack('>BB', encvalue[:2])
+#     intg, = struct.unpack('>I', encvalue[2:6])
+#     intg ^= 0x80000000
+#     if num_frac == 0:
+#         frac = 0
+#     else:
+#         frac, = struct.unpack('>B', encvalue[6:])
+#     return Decimal(str(intg) + '.' + str(frac))
 
 
 def decode_datetime(encvalue):

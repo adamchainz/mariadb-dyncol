@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
+import codecs
+
 import six
 
 from mariadb_dyncol import pack, unpack
@@ -13,6 +15,10 @@ def hexs(byte_string):
     else:
         conv = ord
     return ''.join(("%02X" % conv(x) for x in byte_string)).encode('utf-8')
+
+
+def unhexs(hexs_string):
+    return codecs.decode(hexs_string, 'hex')
 
 
 def check(dicty, hexstring, expected=None, hexstring_cut=False):
