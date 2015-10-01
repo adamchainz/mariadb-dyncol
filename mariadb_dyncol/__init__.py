@@ -9,6 +9,10 @@ import struct
 
 import six
 
+__author__ = 'Adam Johnson'
+__email__ = 'me@adamj.eu'
+__version__ = '1.0.0'
+
 DYN_COL_INT = 0
 DYN_COL_UINT = 1
 DYN_COL_DOUBLE = 2
