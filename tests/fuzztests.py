@@ -8,9 +8,8 @@ from hypothesis.strategies import (
     dictionaries, text, integers, floats, recursive
 )
 
-from mariadb_dyncol import (
-    DynColValueError, MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH, pack, unpack
-)
+from mariadb_dyncol import DynColValueError, pack, unpack
+from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
 
 
 Settings.default.max_examples = os.getenv('MAX_EXAMPLES', 100)

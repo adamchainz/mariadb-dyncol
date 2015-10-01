@@ -8,8 +8,9 @@ import pytest
 
 from mariadb_dyncol import (
     DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError,
-    MAX_NAME_LENGTH, pack, unpack,
+    pack, unpack,
 )
+from mariadb_dyncol.base import MAX_NAME_LENGTH  # private but useful in tests
 from .base import check, hexs, unhexs
 
 
