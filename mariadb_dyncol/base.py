@@ -259,7 +259,7 @@ def unpack(buf):
     flags, column_count, len_names = struct.unpack_from('<BHH', buf, offset=0)
     data_offset_code, coldata_size, data_offset_mask = decode_data_size(flags)
     if (flags & 0xFC) != 4:
-        raise ValueError("Unknown dynamic columns format")
+        raise DynColValueError("Unknown dynamic columns format")
 
     if column_count == 0:
         return {}

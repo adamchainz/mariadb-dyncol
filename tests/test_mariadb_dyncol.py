@@ -330,3 +330,9 @@ def test_nested():
 def test_unknown_type():
     with pytest.raises(DynColTypeError):
         pack({'key': ['lists', 'not', 'supported']})
+
+
+def test_unknown_columns_format():
+    with pytest.raises(DynColValueError):
+        # Numbered columns format as pulled from MariaDB tests
+        unpack(b'0001000100030861666166')
