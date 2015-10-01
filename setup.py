@@ -27,7 +27,7 @@ def get_packages(package):
             if os.path.exists(os.path.join(dirpath, '__init__.py'))]
 
 
-version = get_version('patchy')
+version = get_version('mariadb_dyncol')
 
 
 if sys.argv[-1] == 'publish':
@@ -57,19 +57,20 @@ requirements = [
 ]
 
 setup(
-    name='patchy',
+    name='mariadb-dyncol',
     version=version,
-    description="Patch the source of python functions at runtime.",
+    description="Pack/unpack Python dicts into/out of MariaDB's Dynamic "
+                "Columns format.",
     long_description=readme + '\n\n' + history,
     author="Adam Johnson",
     author_email='me@adamj.eu',
-    url='https://github.com/adamchainz/patchy',
-    packages=get_packages('patchy'),
+    url='https://github.com/adamchainz/mariadb-dyncol',
+    packages=get_packages('mariadb_dyncol'),
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
-    keywords='patchy',
+    keywords='MariaDB',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
