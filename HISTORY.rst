@@ -3,8 +3,8 @@
 History
 -------
 
-1.0.0 (pending release)
------------------------
+1.0.0
+-----
 
-* Support to pack and unpack the named dynamic columns format, ignoring decimal
-  values and strings with a non utf8mb4 encoding
+* Support to pack and unpack the named dynamic columns format. No support for
+  DECIMAL values or strings with a non utf8mb4 charset.
