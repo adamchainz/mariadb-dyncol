@@ -10,9 +10,9 @@ from hypothesis.strategies import (
 
 from mariadb_dyncol import DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
+from .base import check_against_db
 
-
-Settings.default.max_examples = os.getenv('MAX_EXAMPLES', 100)
+Settings.default.max_examples = int(os.getenv('HYPOTHESIS_MAX_EXAMPLES', 100))
 
 
 valid_keys = text(
@@ -45,37 +45,43 @@ def valid_dictionaries(keys, values):
     )
 
 
+def check_data(data):
+    packed = pack(data)
+    check_against_db(data, packed)
+    assert unpack(packed) == data
+
+
 @given(valid_dictionaries(valid_keys, valid_ints))
 def test_ints(data):
-    assert unpack(pack(data)) == data
+    check_data(data)
 
 
 @given(valid_dictionaries(valid_keys, valid_floats))
 def test_floats(data):
     try:
-        assert unpack(pack(data)) == data
+        check_data(data)
     except DynColValueError:
         assume(False)
 
 
 @given(valid_dictionaries(valid_keys, text()))
 def test_strings(data):
-    assert unpack(pack(data)) == data
+    check_data(data)
 
 
 @given(valid_dictionaries(valid_keys, valid_datetimes))
 def test_datetimes(data):
-    assert unpack(pack(data)) == data
+    check_data(data)
 
 
 @given(valid_dictionaries(valid_keys, valid_dates))
 def test_dates(data):
-    assert unpack(pack(data)) == data
+    check_data(data)
 
 
 @given(valid_dictionaries(valid_keys, valid_times))
 def test_times(data):
-    assert unpack(pack(data)) == data
+    check_data(data)
 
 
 recursive_values = recursive(
@@ -88,6 +94,6 @@ recursive_values = recursive(
 @given(valid_dictionaries(valid_keys, recursive_values))
 def test_recursively_defined(data):
     try:
-        assert unpack(pack(data)) == data
+        check_data(data)
     except DynColValueError:
         assume(False)

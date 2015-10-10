@@ -1,13 +1,14 @@
 # Config file for automatic testing at travis-ci.org
-
-language: python
+sudo: required
 
 notifications:
   email: false
 
 language: python
 
+before_script: .travis/before_script.sh
+
 install:
   - pip install tox
 
-script: tox
+script: HYPOTHESIS_MAX_EXAMPLES=1000 tox

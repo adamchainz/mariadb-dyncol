@@ -46,6 +46,10 @@ def test_a_1048576():
     check({"a": 1048576}, b"04010001000000000061000020")
 
 
+def test_0_2147483648():
+    check({'0': 2147483648}, b'040100010000000000300000000001')
+
+
 def test_ulonglongmax():
     check(
         {"a": 18446744073709551615},
@@ -102,9 +106,44 @@ def test_unicode_poo_1():
     check({"💩": 1}, b"040100040000000000F09F92A902")
 
 
-def test_large_string_data():
+def test_unicode_utf8mb4_unpack():
+    # All tests are using utf8 on connection but we should recognize utf8mb4
+    # as well
+    assert unpack(unhexs('040100010000000300612D61')) == {"a": "a"}
+
+
+def test_non_unicode_charset_fails():
+    with pytest.raises(DynColNotSupported):
+        unpack(unhexs('040100010000000300610861'))  # {'a': 'a'} in latin1
+
+
+def test_large_string_data_4093_as():
     check(
-        {'a': 'a' * (2 ** 12)},
+        {'a': 'a' * 4093},
+        b'0401000100000003006121616161',
+        hexstring_cut=True
+    )
+
+
+def test_large_string_data_4094_as():
+    check(
+        {'a': 'a' * 4094},
+        b'050100010000000300006121616161',
+        hexstring_cut=True
+    )
+
+
+def test_large_string_data_4095_as():
+    check(
+        {'a': 'a' * 4095},
+        b'050100010000000300006121616161',
+        hexstring_cut=True
+    )
+
+
+def test_large_string_data_4096_as():
+    check(
+        {'a': 'a' * 4096},
         b'050100010000000300006121616161',
         hexstring_cut=True
     )
@@ -145,10 +184,22 @@ def test_float_minus_3_415():
     check({"a": -3.415}, b"0401000100000002006152B81E85EB510BC0")
 
 
+def test_float_minus_0_0():
+    # MariaDB is discards the minus sign
+    check({"0": -0.0}, b"040100010000000200300000000000000000")
+
+
 def test_float_192873409809():
     check(
         {"a": 192873409809.0},
         b"040100010000000200610080885613744642"
+    )
+
+
+def test_float_1000000000000001():
+    check(
+        {'0': 1000000000000001.0},
+        b'0401000100000002003008003426F56B0C43'
     )
 
 
@@ -202,6 +253,14 @@ def test_datetime_2():
     )
 
 
+def test_datetime_no_microseconds():
+    check(
+        {"0": datetime(year=2000, month=1, day=1,
+                       hour=0, minute=0, second=0)},
+        b"0401000100000005003021A00F000000"
+    )
+
+
 def test_date():
     check(
         {"a": date(year=2015, month=1, day=1)},
@@ -227,6 +286,13 @@ def test_time_2():
     check(
         {"a": time(hour=3, minute=59, second=59, microsecond=999999)},
         b"040100010000000700613F42BFEF0300"
+    )
+
+
+def test_time_no_microseconds():
+    check(
+        {"a": time(hour=1, minute=2, second=3)},
+        b"04010001000000070061831000"
     )
 
 
@@ -262,6 +328,13 @@ def test_255_chars():
     check(
         {'a' * 255: 1},
         b'040100FF0000000000' + b''.join([b'61'] * 255) + b'02'
+    )
+
+
+def test_000_negative_lowest():
+    check(
+        {'000': -2147483647, '0\x80': -2147483647},
+        b'0402000600000000000300400030303030C280FDFFFFFFFDFFFFFF'
     )
 
 
@@ -324,6 +397,13 @@ def test_nested():
         {'falafel': {'a': 1}, 'fala': {'b': 't'}},
         b'0402000B00000008000400C80066616C6166616C6166656C040100010000000'
         b'3006221740401000100000000006102'
+    )
+
+
+def test_nested_empty():
+    check(
+        {'0': {}},
+        b'040100010000000800300400000000'
     )
 
 

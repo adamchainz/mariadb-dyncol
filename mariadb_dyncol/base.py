@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from datetime import date, datetime, time
 from decimal import Decimal
-from math import isinf, isnan
+from math import copysign, isinf, isnan
 
 import struct
 
@@ -60,14 +60,18 @@ def pack(dicty):
     data = []
     total_encname_length = 0
 
-    for name in sorted(six.iterkeys(dicty), key=name_order):
-        value = dicty[name]
+    dicty_names_encoded = {
+        key.encode('utf-8'): value
+        for key, value in six.iteritems(dicty)
+    }
+
+    for encname in sorted(six.iterkeys(dicty_names_encoded), key=name_order):
+        value = dicty_names_encoded[encname]
         if value is None:
             continue
 
-        encname = name.encode('utf-8')
         if len(encname) > MAX_NAME_LENGTH:
-            raise DynColLimitError("Key too long: " + name)
+            raise DynColLimitError("Key too long: " + encname.decode('utf-8'))
         total_encname_length += len(encname)
         if total_encname_length > MAX_TOTAL_NAME_LENGTH:
             raise DynColLimitError("Total length of keys too long")
@@ -147,67 +151,56 @@ def name_order(name):
 
 def data_size(data):
     data_len = sum(len(d) for d in data)
-    if data_len <= 2 ** 12:
+    if data_len < 0xfff:
         return 0, 'H', False
-    elif data_len < 2 ** 20:
+    elif data_len < 0xfffff:
         return 1, 'L', True
-    elif data_len < 2 ** 28:
+    elif data_len < 0xfffffff:
         return 2, 'L', False
     else:
         raise ValueError("Too much data")
 
 
 def encode_int(value):
-    """
-    Stored in the schema:
-    0: no data
-    -1: 1
-     1: 2
-    -2: 3
-     2: 4
-    ...
-    """
-    dtype = DYN_COL_INT
-    if value == 0:
-        encoded = b''
+    if value < 0:
+        dtype = DYN_COL_INT
+        encvalue = -(value << 1) - 1
+        if value < -(2 ** 32 - 1):
+            raise DynColValueError("int {} out of range".format(value))
     else:
-        encoded = 2 * value
-        if value < 0:
-            encoded = -1 * encoded - 1
-
-        cut_last_byte = False
-        if encoded <= (2 ** 8 - 1):
-            code = 'B'
-        elif encoded <= (2 ** 16 - 1):
-            code = 'H'
-        elif encoded <= (2 ** 24 - 1):
-            # Want 3 bytes but only 4 bytes possible with struct
-            code = 'I'
-            cut_last_byte = True
-        elif encoded <= (2 ** 32 - 1):
-            code = 'I'
-        elif value <= (2 ** 64 - 1) and value > 0:
+        if value <= (2 ** 63 - 1):
+            dtype = DYN_COL_INT
+            encvalue = value << 1
+        elif value <= (2 ** 64 - 1):
             dtype = DYN_COL_UINT
-            code = 'Q'
-            encoded = value
+            encvalue = value
         else:
-            raise DynColValueError("int {} too large".format(value))
+            raise DynColValueError("int {} out of range".format(value))
 
-        encoded = struct.pack(code, encoded)
-        if cut_last_byte:
-            encoded = encoded[:-1]
+    encoded = b''
+    while encvalue > 0:
+        encoded += struct.pack('B', encvalue & 0xff)
+        encvalue = encvalue >> 8
+
     return dtype, encoded
 
 
 def encode_float(value):
     if isnan(value) or isinf(value):
         raise DynColValueError("Float value not encodeable: {}".format(value))
+    if value == 0. and copysign(1, value) == -1:  # is -0.0
+        value = 0.0
     return DYN_COL_DOUBLE, struct.pack('d', value)
 
 
 def encode_string(value):
     encoded = value.encode('utf-8')
-    return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8mb4 charset number
+    return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8 charset number
+    # N.B. not using utf8mb4 as it appears there is a bug with emoticons being
+    # backed as question marks, e.g.
+    # > select column_json(column_create('💩', 1)) as r\G
+    # *************************** 1. row ***************************
+    # r: {"?":1}
 
 
 # def encode_decimal(value):
@@ -243,13 +236,21 @@ def encode_date(value):
 
 
 def encode_time(value):
-    val = (
-        value.microsecond |
-        value.second << 20 |
-        value.minute << 26 |
-        value.hour << 32
-    )
-    return DYN_COL_TIME, struct.pack('Q', val)[:6]
+    if value.microsecond > 0:
+        val = (
+            value.microsecond |
+            value.second << 20 |
+            value.minute << 26 |
+            value.hour << 32
+        )
+        return DYN_COL_TIME, struct.pack('Q', val)[:6]
+    else:
+        val = (
+            value.second |
+            value.minute << 6 |
+            value.hour << 12
+        )
+        return DYN_COL_TIME, struct.pack('I', val)[:3]
 
 
 def unpack(buf):
@@ -363,26 +364,13 @@ def decode(dtype, encvalue):
 
 
 def decode_int(encvalue):
-    if len(encvalue) == 0:
-        return 0
-    elif len(encvalue) == 1:
-        code = 'B'
-    elif len(encvalue) == 2:
-        code = 'H'
-    elif len(encvalue) == 3:
-        code = 'I'
-        encvalue += b'\x00'
-    elif len(encvalue) == 4:
-        code = 'I'
+    value = 0
+    for i, b in enumerate(bytearray(encvalue)):
+        value += b << (8 * i)
+    if value & 1:
+        return -(value >> 1) - 1
     else:
-        raise ValueError()
-
-    dvalue, = struct.unpack(code, encvalue)
-
-    value = dvalue >> 1
-    if dvalue & 1:
-        value = -1 * value - 1
-    return value
+        return (value >> 1)
 
 
 def decode_uint(encvalue):
@@ -396,9 +384,9 @@ def decode_double(encvalue):
 
 
 def decode_string(encvalue):
-    if not encvalue.startswith(b'\x21'):
+    if not encvalue.startswith((b'\x21', b'\x2D')):
         raise DynColNotSupported(
-            "Can only decode strings with MySQL charset utf8mb4"
+            "Can only decode strings with MySQL charsets utf8 or utf8mb4"
         )
     return encvalue[1:].decode('utf-8')
 
@@ -430,10 +418,19 @@ def decode_date(encvalue):
 
 
 def decode_time(encvalue):
-    val, = struct.unpack('Q', encvalue + b'\x00\x00')
-    return time(
-        microsecond=val & 0xFFFFF,
-        second=(val >> 20) & 0x3F,
-        minute=(val >> 26) & 0x3F,
-        hour=(val >> 32)
-    )
+    if len(encvalue) == 6:
+        val, = struct.unpack('Q', encvalue + b'\x00\x00')
+        return time(
+            microsecond=val & 0xFFFFF,
+            second=(val >> 20) & 0x3F,
+            minute=(val >> 26) & 0x3F,
+            hour=(val >> 32)
+        )
+    else:  # must be 3
+        val, = struct.unpack('I', encvalue + b'\x00')
+        return time(
+            microsecond=0,
+            second=(val) & 0x3F,
+            minute=(val >> 6) & 0x3F,
+            hour=(val >> 12)
+        )

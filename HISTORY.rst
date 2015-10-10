@@ -3,6 +3,18 @@
 History
 -------
 
+1.1.0
+-----
+
+* Tests now verify every operation against MariaDB's ``COLUMN_CHECK`` and
+  ``COLUMN_CREATE`` functions
+* Fixed column order when >1 UTF8 byte characters are involved
+* Fix encoding ``int``\s around size boundaries
+* Fix encoding ``time``\s and ``datetime``\s with microseconds=0
+* Fix encoding float ``-0.0``
+* Fix a data size boundaries off-by-one error
+* Fix decoding ``utf8mb4`` strings
+
 1.0.0
 -----
 

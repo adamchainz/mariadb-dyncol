@@ -91,8 +91,8 @@ data direct from MariaDB and decoding in Python as opposed to with MariaDB's
 
 As noted above, ``DECIMAL`` values are not supported, and unpacking this
 will raise ``DynColNotSupported``. Also strings will only be decoded with the
-MySQL charset ``utf8mb4`` which corresponds to the full UTF-8 spec, and such
-strings will raise ``DynColNotSupported`` as well.
+MySQL charsets ``utf8`` or ``utf8mb4``; strings with other charsets will raise
+``DynColNotSupported`` as well.
 
 Unsupported column formats, for example the old MariaDB numbered dynamic
 columns format, or corrupt data, will raise ``DynColValueError``.
