@@ -25,10 +25,45 @@ A quick example:
 Features
 ========
 
-* Sensible type mapping
-* Tested against binary data from MariaDB server and its test suite
+* Sensible type mapping from Python to SQL
 * Python 2.7 and 3 compatible
-* Fuzz tested with `hypothesis <http://hypothesis.readthedocs.org/en/latest/>`_
+* Tested against examples from MariaDB, including property/fuzz testing with
+  `hypothesis <http://hypothesis.readthedocs.org/en/latest/>`_ (which is
+  amazing and found many bugs)
+
+Why?
+====
+
+The normal way for adding data into dynamic columns fields is with the
+``COLUMN_CREATE`` function, and its relatives. This allows you to do things
+like:
+
+.. code-block:: sql
+
+    INSERT INTO mytable (attrs) VALUES (COLUMN_CREATE('key', 'value'))
+
+Unfortunately the Django ORM is restricted and cannot use database functions
+like this in every instance, at least not until Django 1.9. It was this
+limitation I hit whilst implementing a dynamic columns field for my project
+`django-mysql <https://github.com/adamchainz/django-mysql>`_ that spurred the
+creation of this library.
+
+By pre-packing the dynamic columns, the above query can just insert the blob
+of data directly:
+
+.. code-block:: sql
+
+    INSERT INTO mytable (attrs) VALUES (X'0401000300000003006B65792176616C7565')
+
+Asides from being more easily implemented with the Django ORM, this approach
+of packing/unpacking dynamic columns in Python also has some advantages:
+
+* All data types are properly preserved in Python. The only way MariaDB
+  provides of pulling back all values for a dynamic columns field is to call
+  ``COLUMN_JSON``, but JSON only supports strings and integers. Also
+  ``COLUMN_JSON`` has a depth limit of 10, but the format has no actual limit.
+* The CPU overhead of packing/unpacking the dynamic columns is moved from you
+  database server to your (presumably more scalable) clients.
 
 API
 ===
