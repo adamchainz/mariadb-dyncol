@@ -3,8 +3,8 @@
 History
 -------
 
-1.1.0
------
+1.1.0 (pending release)
+-----------------------
 
 * Tests now verify every operation against MariaDB's ``COLUMN_CHECK`` and
   ``COLUMN_CREATE`` functions
@@ -15,8 +15,8 @@ History
 * Fix a data size boundaries off-by-one error
 * Fix decoding ``utf8mb4`` strings
 
-1.0.0
------
+1.0.0 (2015-10-09)
+------------------
 
 * Support to pack and unpack the named dynamic columns format. No support for
   DECIMAL values or strings with a non utf8mb4 charset.
