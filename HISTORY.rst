@@ -3,8 +3,8 @@
 History
 -------
 
-1.1.0 (pending release)
------------------------
+1.1.0 (2015-10-13)
+------------------
 
 * Tests now verify every operation against MariaDB's ``COLUMN_CHECK`` and
   ``COLUMN_CREATE`` functions
