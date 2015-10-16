@@ -112,9 +112,9 @@ Examples:
 .. code-block:: python
 
     >>> mariadb_dyncol.pack({"a": 1})
-    b"0401000100000000006102"
+    b'\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02'
     >>> mariadb_dyncol.pack({"a": "💩"})
-    b"0401000100000003006121F09F92A9"
+    b'\x04\x01\x00\x01\x00\x00\x00\x03\x00a!\xf0\x9f\x92\xa9'
 
 ``unpack(bytestring)``
 ----------------------
@@ -136,7 +136,7 @@ Examples:
 
 .. code-block:: python
 
-    >>> mariadb_dyncol.unpack(b"0401000100000003006121F09F92A9")
+    >>> mariadb_dyncol.unpack(b'\x04\x01\x00\x01\x00\x00\x00\x03\x00a!\xf0\x9f\x92\xa9')
     {"a": "💩"}
-    >>> mariadb_dyncol.unpack(b"0401000100000000006102")
+    >>> mariadb_dyncol.unpack(b'\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02')
     {"a": 1}
