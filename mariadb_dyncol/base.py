@@ -3,11 +3,20 @@ from __future__ import unicode_literals
 
 from datetime import date, datetime, time
 from decimal import Decimal
-from math import copysign, isinf, isnan
+from math import isinf, isnan
 
-import struct
+from struct import (
+    pack as struct_pack,
+    unpack as struct_unpack,
+    unpack_from as struct_unpack_from,
+)
 
 import six
+from six import (
+    iteritems as six_iteritems,
+    iterkeys as six_iterkeys,
+)
+from six.moves import range as six_moves_range
 
 DYN_COL_INT = 0
 DYN_COL_UINT = 1
@@ -62,10 +71,10 @@ def pack(dicty):
 
     dicty_names_encoded = {
         key.encode('utf-8'): value
-        for key, value in six.iteritems(dicty)
+        for key, value in six_iteritems(dicty)
     }
 
-    for encname in sorted(six.iterkeys(dicty_names_encoded), key=name_order):
+    for encname in sorted(six_iterkeys(dicty_names_encoded), key=name_order):
         value = dicty_names_encoded[encname]
         if value is None:
             continue
@@ -76,26 +85,11 @@ def pack(dicty):
         if total_encname_length > MAX_TOTAL_NAME_LENGTH:
             raise DynColLimitError("Total length of keys too long")
 
-        if isinstance(value, six.integer_types):
-            dtype, encvalue = encode_int(value)
-        elif isinstance(value, float):
-            dtype, encvalue = encode_float(value)
-        elif isinstance(value, six.text_type):
-            dtype, encvalue = encode_string(value)
-        elif isinstance(value, datetime):
-            dtype, encvalue = encode_datetime(value)
-        elif isinstance(value, Decimal):
-            raise DynColNotSupported("Can't encode Decimal values currently")
-            # dtype, encvalue = encode_decimal(value)
-        elif isinstance(value, date):
-            dtype, encvalue = encode_date(value)
-        elif isinstance(value, time):
-            dtype, encvalue = encode_time(value)
-        elif isinstance(value, dict):
-            dtype = DYN_COL_DYNCOL
-            encvalue = pack(value)
-        else:
+        try:
+            encode_func = ENCODE_FUNCS[type(value)]
+        except KeyError:
             raise DynColTypeError("Unencodable type {}".format(type(value)))
+        dtype, encvalue = encode_func(value)
 
         column_count += 1
         column_directory.append(name_offset)
@@ -116,7 +110,7 @@ def pack(dicty):
     enc_names = b''.join(names)
 
     buf = [
-        struct.pack(
+        struct_pack(
             '<BHH',
             flags,
             column_count,
@@ -125,7 +119,7 @@ def pack(dicty):
     ]
     if not odd_sized_datacode:
         buf.append(
-            struct.pack(
+            struct_pack(
                 '<' + ('H' + coldir_size_code) * (len(column_directory) // 2),
                 *column_directory
             )
@@ -134,10 +128,10 @@ def pack(dicty):
         for i, val in enumerate(column_directory):
             if i % 2 == 0:
                 # name_offset
-                buf.append(struct.pack('<H', val))
+                buf.append(struct_pack('<H', val))
             else:
                 # data_offset + dtype, have to cut last byte
-                val = struct.pack('<' + coldir_size_code, val)
+                val = struct_pack('<' + coldir_size_code, val)
                 buf.append(val[:-1])
     buf.append(enc_names)
     buf.extend(data)
@@ -177,25 +171,28 @@ def encode_int(value):
         else:
             raise DynColValueError("int {} out of range".format(value))
 
-    encoded = b''
-    while encvalue > 0:
-        encoded += struct.pack('B', encvalue & 0xff)
+    to_enc = []
+    while encvalue:
+        to_enc.append(encvalue & 0xff)
         encvalue = encvalue >> 8
-
-    return dtype, encoded
+    return dtype, struct_pack('B' * len(to_enc), *to_enc)
 
 
 def encode_float(value):
     if isnan(value) or isinf(value):
         raise DynColValueError("Float value not encodeable: {}".format(value))
-    if value == 0. and copysign(1, value) == -1:  # is -0.0
-        value = 0.0
-    return DYN_COL_DOUBLE, struct.pack('d', value)
+    encvalue = struct_pack('d', value)
+
+    # -0.0 is not supported in SQL, change to 0.0
+    if encvalue == b'\x00\x00\x00\x00\x00\x00\x00\x80':
+        encvalue = b'\x00\x00\x00\x00\x00\x00\x00\x00'
+
+    return DYN_COL_DOUBLE, encvalue
 
 
 def encode_string(value):
-    encoded = value.encode('utf-8')
-    return DYN_COL_STRING, b'\x21' + encoded  # 0x21 = utf8 charset number
+    return DYN_COL_STRING, b'\x21' + value.encode('utf-8')
+    # 0x21 = utf8 charset number
     # N.B. not using utf8mb4 as it appears there is a bug with emoticons being
     # backed as question marks, e.g.
     # > select column_json(column_create('💩', 1)) as r\G
@@ -203,21 +200,25 @@ def encode_string(value):
     # r: {"?":1}
 
 
+def encode_decimal(value):
+    raise DynColNotSupported("Can't encode Decimal values currently")
+
+
 # def encode_decimal(value):
 #     buf = bytearray()
 #     intg = int(value)
 #     intg_digits = 9
-#     buf.extend(struct.pack('>I', intg))
+#     buf.extend(struct_pack('>I', intg))
 
 #     frac = value - intg
 #     if frac:
 #         frac_digits = 1
 #         frac_piece = int(str(frac)[2:])  # ugh
-#         buf.extend(struct.pack('B', frac_piece))
+#         buf.extend(struct_pack('B', frac_piece))
 #     else:
 #         frac_digits = 0
 
-#     header = struct.pack('>BB', intg_digits, frac_digits)
+#     header = struct_pack('>BB', intg_digits, frac_digits)
 #     buf[0] |= 0x80  # Flip the top bit
 #     return DYN_COL_DECIMAL, header + bytes(buf)
 
@@ -232,7 +233,7 @@ def encode_date(value):
     # We don't need any validation since datetime.date is more limited than the
     # MySQL format
     val = value.day | value.month << 5 | value.year << 9
-    return DYN_COL_DATE, struct.pack('I', val)[:-1]
+    return DYN_COL_DATE, struct_pack('I', val)[:-1]
 
 
 def encode_time(value):
@@ -243,21 +244,41 @@ def encode_time(value):
             value.minute << 26 |
             value.hour << 32
         )
-        return DYN_COL_TIME, struct.pack('Q', val)[:6]
+        return DYN_COL_TIME, struct_pack('Q', val)[:6]
     else:
         val = (
             value.second |
             value.minute << 6 |
             value.hour << 12
         )
-        return DYN_COL_TIME, struct.pack('I', val)[:3]
+        return DYN_COL_TIME, struct_pack('I', val)[:3]
+
+
+def encode_dict(value):
+    return DYN_COL_DYNCOL, pack(value)
+
+
+ENCODE_FUNCS = {
+    int: encode_int,
+    date: encode_date,
+    datetime: encode_datetime,
+    time: encode_time,
+    float: encode_float,
+    six.text_type: encode_string,
+    Decimal: encode_decimal,
+    dict: encode_dict,
+}
+
+if six.PY2:
+    from __builtin__ import long  # Avoid python 3 lint error
+    ENCODE_FUNCS[long] = encode_int
 
 
 def unpack(buf):
     """
     Convert MariaDB dynamic columns data in a byte string into a dict
     """
-    flags, column_count, len_names = struct.unpack_from('<BHH', buf, offset=0)
+    flags, column_count, len_names = struct_unpack_from('<BHH', buf)
     data_offset_code, coldata_size, data_offset_mask = decode_data_size(flags)
     if (flags & 0xFC) != 4:
         raise DynColValueError("Unknown dynamic columns format")
@@ -265,11 +286,10 @@ def unpack(buf):
     if column_count == 0:
         return {}
 
-    header_end = 1 + 2 + 2
-    column_directory_end = header_end + coldata_size * column_count
+    column_directory_end = (1 + 2 + 2) + coldata_size * column_count
     names_end = column_directory_end + len_names
 
-    column_directory = buf[header_end:column_directory_end]
+    column_directory = buf[(1 + 2 + 2):column_directory_end]
     enc_names = buf[column_directory_end:names_end]
     data = buf[names_end:]
 
@@ -280,23 +300,23 @@ def unpack(buf):
     last_data_offset = None
     last_dtype = None
 
-    for i in range(column_count):
+    for i in six_moves_range(column_count):
         if coldata_size % 2 == 0:
-            name_offset, data_offset_dtype = struct.unpack_from(
+            name_offset, data_offset_dtype = struct_unpack_from(
                 '<H' + data_offset_code,
                 column_directory,
                 offset=i * coldata_size
             )
         else:
-            name_offset, = struct.unpack_from(
+            name_offset, = struct_unpack_from(
                 '<H',
                 column_directory,
                 offset=i * coldata_size
             )
-            # can't struct.unpack the 3 bytes so hack around
+            # can't struct_unpack the 3 bytes so hack around
             dodt_bytes = column_directory[(i * coldata_size + 2):
                                           (i * coldata_size + 5)] + b'\x00'
-            data_offset_dtype, = struct.unpack('<' + data_offset_code,
+            data_offset_dtype, = struct_unpack('<' + data_offset_code,
                                                dodt_bytes)
 
         data_offset_dtype &= data_offset_mask
@@ -323,7 +343,7 @@ def unpack(buf):
     # join data and names
     return {
         names[i]: values[i]
-        for i in range(column_count)
+        for i in six_moves_range(column_count)
     }
 
 
@@ -340,27 +360,11 @@ def decode_data_size(flags):
 
 
 def decode(dtype, encvalue):
-    if dtype == DYN_COL_INT:
-        return decode_int(encvalue)
-    elif dtype == DYN_COL_UINT:
-        return decode_uint(encvalue)
-    elif dtype == DYN_COL_DOUBLE:
-        return decode_double(encvalue)
-    elif dtype == DYN_COL_STRING:
-        return decode_string(encvalue)
-    elif dtype == DYN_COL_DECIMAL:
-        raise DynColNotSupported("Can't decode Decimal values currently")
-        # return decode_decimal(encvalue)
-    elif dtype == DYN_COL_DATETIME:
-        return decode_datetime(encvalue)
-    elif dtype == DYN_COL_DATE:
-        return decode_date(encvalue)
-    elif dtype == DYN_COL_TIME:
-        return decode_time(encvalue)
-    elif dtype == DYN_COL_DYNCOL:
-        return unpack(encvalue)
-    else:
+    try:
+        decode_func = DECODE_FUNCS[dtype]
+    except KeyError:
         raise ValueError()
+    return decode_func(encvalue)
 
 
 def decode_int(encvalue):
@@ -374,12 +378,12 @@ def decode_int(encvalue):
 
 
 def decode_uint(encvalue):
-    value, = struct.unpack('Q', encvalue)
+    value, = struct_unpack('Q', encvalue)
     return value
 
 
 def decode_double(encvalue):
-    value, = struct.unpack('d', encvalue)
+    value, = struct_unpack('d', encvalue)
     return value
 
 
@@ -391,14 +395,18 @@ def decode_string(encvalue):
     return encvalue[1:].decode('utf-8')
 
 
+def decode_decimal(encvalue):
+    raise DynColNotSupported("Can't decode Decimal values currently")
+
+
 # def decode_decimal(encvalue):
-#     num_intg, num_frac = struct.unpack('>BB', encvalue[:2])
-#     intg, = struct.unpack('>I', encvalue[2:6])
+#     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
+#     intg, = struct_unpack('>I', encvalue[2:6])
 #     intg ^= 0x80000000
 #     if num_frac == 0:
 #         frac = 0
 #     else:
-#         frac, = struct.unpack('>B', encvalue[6:])
+#         frac, = struct_unpack('>B', encvalue[6:])
 #     return Decimal(str(intg) + '.' + str(frac))
 
 
@@ -409,7 +417,7 @@ def decode_datetime(encvalue):
 
 
 def decode_date(encvalue):
-    val, = struct.unpack('I', encvalue + b'\x00')
+    val, = struct_unpack('I', encvalue + b'\x00')
     return date(
         day=val & 0x1F,
         month=(val >> 5) & 0xF,
@@ -419,7 +427,7 @@ def decode_date(encvalue):
 
 def decode_time(encvalue):
     if len(encvalue) == 6:
-        val, = struct.unpack('Q', encvalue + b'\x00\x00')
+        val, = struct_unpack('Q', encvalue + b'\x00\x00')
         return time(
             microsecond=val & 0xFFFFF,
             second=(val >> 20) & 0x3F,
@@ -427,10 +435,22 @@ def decode_time(encvalue):
             hour=(val >> 32)
         )
     else:  # must be 3
-        val, = struct.unpack('I', encvalue + b'\x00')
+        val, = struct_unpack('I', encvalue + b'\x00')
         return time(
             microsecond=0,
             second=(val) & 0x3F,
             minute=(val >> 6) & 0x3F,
             hour=(val >> 12)
         )
+
+DECODE_FUNCS = {
+    DYN_COL_INT: decode_int,
+    DYN_COL_UINT: decode_uint,
+    DYN_COL_DOUBLE: decode_double,
+    DYN_COL_STRING: decode_string,
+    DYN_COL_DECIMAL: decode_decimal,
+    DYN_COL_DATETIME: decode_datetime,
+    DYN_COL_DATE: decode_date,
+    DYN_COL_TIME: decode_time,
+    DYN_COL_DYNCOL: unpack,
+}

@@ -8,6 +8,8 @@ History
 
 * pending
 * Disallowed ``str`` values on Python 2 - always use ``unicode``
+* Added a benchmark script and made some optimizations that add up to a speed
+  boost of about 10%.
 
 1.1.0 (2015-10-13)
 ------------------

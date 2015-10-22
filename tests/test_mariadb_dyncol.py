@@ -124,6 +124,7 @@ def test_str_not_accepted():
         pack({'a': str('value')})
 
 
+@pytest.mark.slow
 def test_large_string_data_4093_as():
     check(
         {'a': 'a' * 4093},
@@ -132,6 +133,7 @@ def test_large_string_data_4093_as():
     )
 
 
+@pytest.mark.slow
 def test_large_string_data_4094_as():
     check(
         {'a': 'a' * 4094},
@@ -140,6 +142,7 @@ def test_large_string_data_4094_as():
     )
 
 
+@pytest.mark.slow
 def test_large_string_data_4095_as():
     check(
         {'a': 'a' * 4095},
@@ -148,6 +151,7 @@ def test_large_string_data_4095_as():
     )
 
 
+@pytest.mark.slow
 def test_large_string_data_4096_as():
     check(
         {'a': 'a' * 4096},
@@ -156,6 +160,7 @@ def test_large_string_data_4096_as():
     )
 
 
+@pytest.mark.slow
 def test_large_string_data_2():
     check(
         {'a': 'a' * (2 ** 13), 'b': 1},
@@ -164,6 +169,7 @@ def test_large_string_data_2():
     )
 
 
+@pytest.mark.slow
 def test_huge_string_data():
     check(
         {'a': 'a' * (2 ** 20)},
