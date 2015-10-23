@@ -7,6 +7,7 @@ History
 ---------------
 
 * pending
+* Disallowed ``str`` values on Python 2 - always use ``unicode``
 
 1.1.0 (2015-10-13)
 ------------------

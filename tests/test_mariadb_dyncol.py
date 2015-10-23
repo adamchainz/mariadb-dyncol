@@ -5,6 +5,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 
 import pytest
+import six
 
 from mariadb_dyncol import (
     DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError,
@@ -115,6 +116,12 @@ def test_unicode_utf8mb4_unpack():
 def test_non_unicode_charset_fails():
     with pytest.raises(DynColNotSupported):
         unpack(unhexs('040100010000000300610861'))  # {'a': 'a'} in latin1
+
+
+@pytest.mark.skipif(not six.PY2, reason="requires Python 2")
+def test_str_not_accepted():
+    with pytest.raises(DynColTypeError):
+        pack({'a': str('value')})
 
 
 def test_large_string_data_4093_as():

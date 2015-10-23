@@ -82,8 +82,9 @@ of a normal query.
 The ``dict``\'s keys must all be unicode strings, and the values must all be
 one of the supported data types:
 
-* ``int`` between ``-(2 ** 32) + 1`` and ``(2 ** 64) - 1``
-* ``str`` up to 4GB
+* ``int`` between ``-(2 ** 32) + 1`` and ``(2 ** 64) - 1`` (Python 2: ``long``
+  is supported too)
+* ``str`` up to 4GB encoded in UTF-8 (Python 2: ``unicode``)
 * ``float`` - anything except ``NaN`` or ``+/- inf``
 * ``datetime.datetime`` - full range supported
 * ``datetime.date`` - full range supported

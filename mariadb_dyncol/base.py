@@ -80,7 +80,7 @@ def pack(dicty):
             dtype, encvalue = encode_int(value)
         elif isinstance(value, float):
             dtype, encvalue = encode_float(value)
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, six.text_type):
             dtype, encvalue = encode_string(value)
         elif isinstance(value, datetime):
             dtype, encvalue = encode_datetime(value)
