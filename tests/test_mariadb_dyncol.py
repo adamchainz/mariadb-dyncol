@@ -40,7 +40,7 @@ def test_a_128():
 
 
 def test_a_65535():
-    check({"a": 65535}, b"04010001000000000061FEFF01")
+    check({"a": 65535}, b"04010001000000000061feff01")
 
 
 def test_a_1048576():
@@ -54,7 +54,7 @@ def test_0_2147483648():
 def test_ulonglongmax():
     check(
         {"a": 18446744073709551615},
-        b"04010001000000010061FFFFFFFFFFFFFFFF"
+        b"04010001000000010061ffffffffffffffff"
     )
 
 
@@ -84,7 +84,7 @@ def test_a_1_b_2_c_3():
 
 
 def test_abc_123():
-    check({"abc": 123}, b"040100030000000000616263F6")
+    check({"abc": 123}, b"040100030000000000616263f6")
 
 
 def test_string_empty():
@@ -96,21 +96,21 @@ def test_empty_key():
 
 
 def test_string_values():
-    check({"a": "string"}, b"0401000100000003006121737472696E67")
+    check({"a": "string"}, b"0401000100000003006121737472696e67")
 
 
 def test_a_unicode_poo():
-    check({"a": "💩"}, b"0401000100000003006121F09F92A9")
+    check({"a": "💩"}, b"0401000100000003006121f09f92a9")
 
 
 def test_unicode_poo_1():
-    check({"💩": 1}, b"040100040000000000F09F92A902")
+    check({"💩": 1}, b"040100040000000000f09f92a902")
 
 
 def test_unicode_utf8mb4_unpack():
     # All tests are using utf8 on connection but we should recognize utf8mb4
     # as well
-    assert unpack(unhexs('040100010000000300612D61')) == {"a": "a"}
+    assert unpack(unhexs('040100010000000300612d61')) == {"a": "a"}
 
 
 def test_non_unicode_charset_fails():
@@ -184,11 +184,11 @@ def test_dict():
 
 
 def test_float_1_0():
-    check({"a": 1.0}, b"04010001000000020061000000000000F03F")
+    check({"a": 1.0}, b"04010001000000020061000000000000f03f")
 
 
 def test_float_minus_3_415():
-    check({"a": -3.415}, b"0401000100000002006152B81E85EB510BC0")
+    check({"a": -3.415}, b"0401000100000002006152b81e85eb510bc0")
 
 
 def test_float_minus_0_0():
@@ -206,7 +206,7 @@ def test_float_192873409809():
 def test_float_1000000000000001():
     check(
         {'0': 1000000000000001.0},
-        b'0401000100000002003008003426F56B0C43'
+        b'0401000100000002003008003426f56b0c43'
     )
 
 
@@ -236,19 +236,19 @@ def test_unpack_Decimal_not_implemented():
 
 
 # def test_decimal_123456789():
-#     check({'a': Decimal('123456789')}, b'040100010000000400610900875BCD15')
+#     check({'a': Decimal('123456789')}, b'040100010000000400610900875bcd15')
 
 
 # def test_decimal_123456789_5():
 #     check({'a': Decimal('123456789.5')},
-#            b'040100010000000400610901875BCD1505')
+#            b'040100010000000400610901875bcd1505')
 
 
 def test_datetime():
     check(
         {"a": datetime(year=1989, month=10, day=4,
                        hour=3, minute=4, second=55, microsecond=142859)},
-        b"04010001000000050061448B0F0B2E72130300"
+        b"04010001000000050061448b0f0b2e72130300"
     )
 
 
@@ -256,7 +256,7 @@ def test_datetime_2():
     check(
         {"a": datetime(year=2300, month=12, day=25,
                        hour=15, minute=55, second=12, microsecond=998134)},
-        b"0401000100000005006199F911F63ACFDC0F00"
+        b"0401000100000005006199f911f63acfdc0f00"
     )
 
 
@@ -264,14 +264,14 @@ def test_datetime_no_microseconds():
     check(
         {"0": datetime(year=2000, month=1, day=1,
                        hour=0, minute=0, second=0)},
-        b"0401000100000005003021A00F000000"
+        b"0401000100000005003021a00f000000"
     )
 
 
 def test_date():
     check(
         {"a": date(year=2015, month=1, day=1)},
-        b"0401000100000006006121BE0F"
+        b"0401000100000006006121be0f"
     )
 
 
@@ -285,14 +285,14 @@ def test_date_2():
 def test_time():
     check(
         {"a": time(hour=12, minute=2, second=3, microsecond=676767)},
-        b"040100010000000700619F533A080C00"
+        b"040100010000000700619f533a080c00"
     )
 
 
 def test_time_2():
     check(
         {"a": time(hour=3, minute=59, second=59, microsecond=999999)},
-        b"040100010000000700613F42BFEF0300"
+        b"040100010000000700613f42bfef0300"
     )
 
 
@@ -306,7 +306,7 @@ def test_time_no_microseconds():
 def test_cyrillic_key():
     check(
         {'адын': 1212},
-        b'040100080000000000D0B0D0B4D18BD0BD7809'
+        b'040100080000000000d0b0d0b4d18bd0bd7809'
     )
 
 
@@ -334,14 +334,14 @@ def test_two_keys_other():
 def test_255_chars():
     check(
         {'a' * 255: 1},
-        b'040100FF0000000000' + b''.join([b'61'] * 255) + b'02'
+        b'040100ff0000000000' + b''.join([b'61'] * 255) + b'02'
     )
 
 
 def test_000_negative_lowest():
     check(
         {'000': -2147483647, '0\x80': -2147483647},
-        b'0402000600000000000300400030303030C280FDFFFFFFFDFFFFFF'
+        b'0402000600000000000300400030303030c280fdfffffffdffffff'
     )
 
 
@@ -350,7 +350,7 @@ def test_MAX_NAME_LENGTH_chars():
     long_key_encoded = long_key.encode('utf-8')
     check(
         {long_key: 1},
-        b'040100FF3F00000000' + hexs(long_key_encoded) + b'02'
+        b'040100ff3f00000000' + hexs(long_key_encoded) + b'02'
     )
 
 
@@ -364,7 +364,7 @@ def test_name_unicode_fits():
     long_key_encoded = long_key.encode('utf8')
     check(
         {long_key: 1},
-        b'040100FF3F00000000' + hexs(long_key_encoded) + b'02'
+        b'040100ff3f00000000' + hexs(long_key_encoded) + b'02'
     )
 
 
@@ -402,7 +402,7 @@ def test_total_name_length_overflow():
 def test_nested():
     check(
         {'falafel': {'a': 1}, 'fala': {'b': 't'}},
-        b'0402000B00000008000400C80066616C6166616C6166656C040100010000000'
+        b'0402000b00000008000400c80066616c6166616c6166656c040100010000000'
         b'3006221740401000100000000006102'
     )
 
