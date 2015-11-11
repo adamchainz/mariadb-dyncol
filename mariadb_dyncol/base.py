@@ -4,18 +4,13 @@ from __future__ import unicode_literals
 from datetime import date, datetime, time
 from decimal import Decimal
 from math import isinf, isnan
+from struct import pack as struct_pack
+from struct import unpack as struct_unpack
+from struct import unpack_from as struct_unpack_from
 
-from struct import (
-    pack as struct_pack,
-    unpack as struct_unpack,
-    unpack_from as struct_unpack_from,
-)
-
-import six
-from six import (
-    iteritems as six_iteritems,
-    iterkeys as six_iterkeys,
-)
+from six import iteritems as six_iteritems
+from six import iterkeys as six_iterkeys
+from six import PY2, text_type
 from six.moves import range as six_moves_range
 
 DYN_COL_INT = 0
@@ -264,12 +259,12 @@ ENCODE_FUNCS = {
     datetime: encode_datetime,
     time: encode_time,
     float: encode_float,
-    six.text_type: encode_string,
+    text_type: encode_string,
     Decimal: encode_decimal,
     dict: encode_dict,
 }
 
-if six.PY2:
+if PY2:
     from __builtin__ import long  # Avoid python 3 lint error
     ENCODE_FUNCS[long] = encode_int
 
