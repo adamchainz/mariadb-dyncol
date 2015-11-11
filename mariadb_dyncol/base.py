@@ -196,26 +196,22 @@ def encode_string(value):
 
 
 def encode_decimal(value):
-    raise DynColNotSupported("Can't encode Decimal values currently")
+    buf = bytearray()
+    intg = int(value)
+    intg_digits = 9
+    buf.extend(struct_pack('>I', intg))
 
+    frac = value - intg
+    if frac:
+        frac_digits = 1
+        frac_piece = int(str(frac)[2:])  # ugh
+        buf.extend(struct_pack('B', frac_piece))
+    else:
+        frac_digits = 0
 
-# def encode_decimal(value):
-#     buf = bytearray()
-#     intg = int(value)
-#     intg_digits = 9
-#     buf.extend(struct_pack('>I', intg))
-
-#     frac = value - intg
-#     if frac:
-#         frac_digits = 1
-#         frac_piece = int(str(frac)[2:])  # ugh
-#         buf.extend(struct_pack('B', frac_piece))
-#     else:
-#         frac_digits = 0
-
-#     header = struct_pack('>BB', intg_digits, frac_digits)
-#     buf[0] |= 0x80  # Flip the top bit
-#     return DYN_COL_DECIMAL, header + bytes(buf)
+    header = struct_pack('>BB', intg_digits, frac_digits)
+    buf[0] |= 0x80  # Flip the top bit
+    return DYN_COL_DECIMAL, header + bytes(buf)
 
 
 def encode_datetime(value):
@@ -391,18 +387,14 @@ def decode_string(encvalue):
 
 
 def decode_decimal(encvalue):
-    raise DynColNotSupported("Can't decode Decimal values currently")
-
-
-# def decode_decimal(encvalue):
-#     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
-#     intg, = struct_unpack('>I', encvalue[2:6])
-#     intg ^= 0x80000000
-#     if num_frac == 0:
-#         frac = 0
-#     else:
-#         frac, = struct_unpack('>B', encvalue[6:])
-#     return Decimal(str(intg) + '.' + str(frac))
+    num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
+    intg, = struct_unpack('>I', encvalue[2:6])
+    intg ^= 0x80000000
+    if num_frac == 0:
+        frac = 0
+    else:
+        frac, = struct_unpack('>B', encvalue[6:])
+    return Decimal(str(intg) + '.' + str(frac))
 
 
 def decode_datetime(encvalue):

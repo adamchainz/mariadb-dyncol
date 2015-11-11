@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import binascii
 from datetime import date, datetime, time
+from decimal import Decimal
 
 import MySQLdb
 import six
@@ -107,4 +108,5 @@ type_map = {
     date: 'DATE',
     datetime: 'DATETIME',
     time: 'TIME',
+    Decimal: 'DECIMAL',
 }
