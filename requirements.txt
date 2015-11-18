@@ -1,8 +1,8 @@
-hypothesis==1.11.4
+hypothesis==1.14.0
 mysqlclient==1.3.7
 py==1.4.30
 pytest==2.8.2
-pytz==2015.6
-six==1.9.0
-twine==1.6.2
-wheel==0.23.0
+pytz==2015.7
+six==1.10.0
+twine==1.6.4
+wheel==0.26.0
