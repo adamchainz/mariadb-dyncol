@@ -4,7 +4,7 @@ from math import isnan, isinf
 from hypothesis import assume, given
 from hypothesis.extra.datetime import datetimes
 from hypothesis.strategies import (
-    dictionaries, text, integers, floats, recursive
+    decimals, dictionaries, text, integers, floats, recursive
 )
 
 from mariadb_dyncol import DynColValueError, pack, unpack
@@ -27,6 +27,7 @@ valid_ints = integers(
 valid_floats = floats().filter(
     lambda f: not isnan(f) and not isinf(f)
 )
+valid_decimals = decimals()
 valid_datetimes = datetimes(timezones=[])
 valid_dates = deepcopy(valid_datetimes).map(lambda dt: dt.date())
 valid_times = deepcopy(valid_datetimes).map(lambda dt: dt.time())
@@ -62,6 +63,11 @@ def test_floats(data):
 
 @given(valid_dictionaries(valid_keys, text()))
 def test_strings(data):
+    check_data(data)
+
+
+@given(valid_dictionaries(valid_keys, valid_decimals))
+def test_decimals(data):
     check_data(data)
 
 

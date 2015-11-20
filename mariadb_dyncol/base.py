@@ -196,10 +196,15 @@ def encode_string(value):
 
 
 def encode_decimal(value):
+    print(value)
     strvalue = str(value)
 
-    if strvalue == '0':
+    if strvalue in ('-0', '0'):
         return DYN_COL_DECIMAL, b''
+
+    is_neg = (strvalue[0] == '-')
+    if is_neg:
+        strvalue = strvalue[1:]
 
     strdigits = strvalue.split('.')
     if len(strdigits) == 1:
@@ -231,7 +236,7 @@ def encode_decimal(value):
         encgroup = encgroup[-dig2bytes[len(group)]:]
         buf.extend(encgroup)
 
-    if value < 0:
+    if is_neg:
         buf = [b ^ 0xFF for b in buf]
 
     buf[0] ^= 0x80  # Flip the top bit
@@ -445,9 +450,6 @@ def decode_decimal(encvalue):
         intg_buf = intg_buf[:-9]
 
     for group in reversed(intg_digit_groups):
-
-        from pprint import pprint
-        pprint(locals())
         value, = struct_unpack('>I', group.rjust(4, b'\x00'))
         digits.extend(int(x) for x in str(value))
 
@@ -460,10 +462,11 @@ def decode_decimal(encvalue):
         value, = struct_unpack('>I', group.rjust(4, b'\x00'))
         digits.extend(int(x) for x in str(value))
 
-    print(digits)
-
     sign = 1 if is_neg else 0
     exponent = -num_frac
+
+    from pprint import pprint
+    pprint(locals())
     return Decimal((sign, digits, exponent))
 
 
