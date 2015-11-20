@@ -429,9 +429,13 @@ def decode_decimal(encvalue):
 
     buf[0] ^= 0x80  # Flip top bit (back)
 
-    # THESE ARE WRONG
-    intg_buf = buf[:num_intg]
-    frac_buf = buf[num_intg:]
+    intg_num_bytes = (
+        ((num_intg - (num_intg % 9)) // 9) * 4 +
+        dig2bytes[num_intg % 9]
+    )
+
+    intg_buf = buf[:intg_num_bytes]
+    frac_buf = buf[intg_num_bytes:]
 
     digits = []
 
