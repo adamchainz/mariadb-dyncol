@@ -226,8 +226,12 @@ def test_float_inf_not_stored():
         pack({"a": float('inf')})
 
 
+def test_decimal_0():
+    check({'a': Decimal(0)}, b'04010001000000040061')
+
+
 def test_decimal_1():
-    check({'a': Decimal('1')}, b'04010001000000040061090080000001')
+    check({'a': Decimal('1.')}, b'04010001000000040061010081')
 
 
 def test_decimal_123456789():
