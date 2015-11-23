@@ -197,15 +197,16 @@ def encode_string(value):
 
 def encode_decimal(value):
     print("encode_decimal: ", value)
-    textvalue = decimal_to_text(value)
+    dtup = value.as_tuple()
 
-    if textvalue in ('Infinity', '-Infinity', 'NaN'):
+    if dtup.exponent in ('F', 'n'):  # Infinity, NaN
         raise DynColValueError(
             "Decimal value not encodeable: {}".format(value)
         )
-
-    if textvalue in ('-0', '0'):
+    elif dtup.digits == (0,):
         return DYN_COL_DECIMAL, b''
+
+    textvalue = decimal_to_text(value)
 
     is_neg = (textvalue[0] == '-')
     if is_neg:

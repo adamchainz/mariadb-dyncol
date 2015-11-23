@@ -230,6 +230,14 @@ def test_decimal_0():
     check({'a': Decimal(0)}, b'04010001000000040061')
 
 
+def test_decimal_minus_0():
+    check({'a': Decimal('-0')}, b'04010001000000040061')
+
+
+def test_decimal_0_E10():
+    check({'a': Decimal('0E10')}, b'04010001000000040061')
+
+
 def test_decimal_1():
     check({'a': Decimal('1')}, b'04010001000000040061010081')
 
