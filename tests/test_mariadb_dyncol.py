@@ -245,6 +245,10 @@ def test_decimal_twice():
     )
 
 
+def test_decimal_1000000000():
+    check({'a': Decimal('1000000000')}, b'040100010000000400610a008100000000')
+
+
 def test_decimal_0_1():
     check({'a': Decimal('0.1')}, b'0401000100000004006101018001')
 

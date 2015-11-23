@@ -461,7 +461,8 @@ def decode_decimal(encvalue):
         intg_buf = intg_buf[num_bytes:]
 
         value, = struct_unpack('>I', piece.rjust(4, b'\x00'))
-        digits.extend(int(x) for x in text_type(value))
+        value = text_type(value).rjust(piece_digits, '0')
+        digits.extend(int(x) for x in value)
 
     while frac_buf:
         piece_digits = min(9, num_frac)
@@ -472,7 +473,7 @@ def decode_decimal(encvalue):
 
         value, = struct_unpack('>I', piece)
         value = text_type(value).rjust(piece_digits, '0')
-        digits.extend(int(x) for x in text_type(value))
+        digits.extend(int(x) for x in value)
 
     sign = 1 if is_neg else 0
     val = Decimal((sign, digits, exponent))
