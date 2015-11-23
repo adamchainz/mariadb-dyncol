@@ -206,43 +206,49 @@ def encode_decimal(value):
     elif dtup.digits == (0,):
         return DYN_COL_DECIMAL, b''
 
-    textvalue = decimal_to_text(value)
+    digits = list(dtup.digits)
+    if dtup.exponent >= 0:
+        intg_digits = digits
+        intg_digits.extend([0] * dtup.exponent)
+        frac_digits = []
+    elif dtup.exponent < 0:
+        intg_digits = digits[:dtup.exponent]
+        frac_digits = digits[dtup.exponent:]
+        frac_digits = (
+            [0] * (-dtup.exponent - len(frac_digits)) +
+            frac_digits
+        )
 
-    is_neg = (textvalue[0] == '-')
-    if is_neg:
-        textvalue = textvalue[1:]
+    if not intg_digits:  # normalization - not strictly necessary
+        intg_digits = [0]
 
-    strdigits = textvalue.split('.')
-    if len(strdigits) == 1:
-        intg_digits = strdigits[0]
-        frac_digits = ''
-    else:
-        intg_digits, frac_digits = strdigits
+    print(intg_digits, frac_digits)
 
     header = struct_pack('>BB', len(intg_digits), len(frac_digits))
 
-    intg_digit_groups = []
-    while intg_digits:
-        intg_digit_groups.append(intg_digits[-9:])
-        intg_digits = intg_digits[:-9]
-
-    frac_digit_groups = []
-    while frac_digits:
-        frac_digit_groups.append(frac_digits[:9])
-        frac_digits = frac_digits[9:]
-
     buf = bytearray()
-    for group in reversed(intg_digit_groups):
-        encgroup = struct_pack('>I', int(group))
-        encgroup = encgroup[-dig2bytes[len(group)]:]
-        buf.extend(encgroup)
 
-    for group in frac_digit_groups:
-        encgroup = struct_pack('>I', int(group))
-        encgroup = encgroup[-dig2bytes[len(group)]:]
-        buf.extend(encgroup)
+    while intg_digits:
+        piece_size = (len(intg_digits) % 9) or 9
 
-    if is_neg:
+        piece_digits = intg_digits[:piece_size]
+        intg_digits = intg_digits[piece_size:]
+
+        enc_piece = struct_pack('>I', digit_list_to_int(piece_digits))
+        enc_piece = enc_piece[-dig2bytes[len(piece_digits)]:]
+        buf.extend(enc_piece)
+
+    while frac_digits:
+        piece_size = min(9, len(frac_digits))
+
+        piece_digits = frac_digits[:piece_size]
+        frac_digits = frac_digits[piece_size:]
+
+        enc_piece = struct_pack('>I', digit_list_to_int(piece_digits))
+        enc_piece = enc_piece[-dig2bytes[len(piece_digits)]:]
+        buf.extend(enc_piece)
+
+    if dtup.sign == 1:  # negative
         buf = bytearray(b ^ 0xFF for b in buf)
 
     buf[0] ^= 0x80  # Flip the top bit
@@ -252,27 +258,14 @@ def encode_decimal(value):
     return DYN_COL_DECIMAL, header + bytes(buf)
 
 
-def decimal_to_text(value):
-    """
-    text_type() of a Decimal can sometimes return "engineering notation" which
-    isn't what we want - in that case, we convert it out to a full string
-    representation
-    """
-    textvalue = text_type(value)
-    if 'E' in textvalue:
-        dtup = value.as_tuple()
-        textvalue = ''.join(text_type(d) for d in dtup.digits)
-        if dtup.exponent > 0:
-            textvalue += '0' * dtup.exponent
-        elif dtup.exponent < 0:
-            textvalue = (
-                textvalue[:dtup.exponent] +
-                '.' +
-                textvalue[dtup.exponent:]
-            )
-        if dtup.sign == 1:
-            textvalue = '-' + textvalue
-    return textvalue
+def digit_list_to_int(digit_list):
+    n = 0
+    p = 1
+    for d in reversed(digit_list):
+        n += d * p
+        p *= 10
+    return n
+
 
 dig2bytes = [0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
 

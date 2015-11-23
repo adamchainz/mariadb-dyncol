@@ -283,6 +283,13 @@ def test_decimal_0_12345678912():
     )
 
 
+def test_decimal_0_01():
+    check(
+        {'a': Decimal('0.01')},
+        b'0401000100000004006101028001'
+    )
+
+
 def test_decimal_large_intg():
     check(
         {'a': Decimal('1.000000000000000000000000000E+28')},
