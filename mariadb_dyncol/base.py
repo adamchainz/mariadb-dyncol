@@ -447,15 +447,16 @@ def decode_decimal(encvalue):
 
     digits = []
 
-    intg_digit_groups = []
     while intg_buf:
-        intg_digit_groups.append(intg_buf[-4:])
-        intg_buf = intg_buf[:-4]
+        piece_digits = (num_intg % 9) or 9
+        num_intg -= piece_digits
 
-    for group in reversed(intg_digit_groups):
-        value, = struct_unpack('>I', group.rjust(4, b'\x00'))
-        digits.extend(int(x) for x in str(value))
-        print "digits:", digits
+        num_bytes = dig2bytes[piece_digits]
+        piece = intg_buf[:num_bytes]
+        intg_buf = intg_buf[num_bytes:]
+
+        value, = struct_unpack('>I', piece.rjust(4, b'\x00'))
+        digits.extend(int(x) for x in text_type(value))
 
     while frac_buf:
         piece_digits = min(9, num_frac)
@@ -466,7 +467,7 @@ def decode_decimal(encvalue):
 
         value, = struct_unpack('>I', piece)
         value = text_type(value).rjust(piece_digits, '0')
-        digits.extend(int(x) for x in str(value))
+        digits.extend(int(x) for x in text_type(value))
 
     sign = 1 if is_neg else 0
     val = Decimal((sign, digits, exponent))
