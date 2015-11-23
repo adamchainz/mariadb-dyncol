@@ -197,21 +197,21 @@ def encode_string(value):
 
 def encode_decimal(value):
     print "encode_decimal: ", value
-    strvalue = str(value)
+    textvalue = decimal_to_text(value)
 
-    if strvalue in ('Infinity', '-Infinity', 'NaN'):
+    if textvalue in ('Infinity', '-Infinity', 'NaN'):
         raise DynColValueError(
             "Decimal value not encodeable: {}".format(value)
         )
 
-    if strvalue in ('-0', '0'):
+    if textvalue in ('-0', '0'):
         return DYN_COL_DECIMAL, b''
 
-    is_neg = (strvalue[0] == '-')
+    is_neg = (textvalue[0] == '-')
     if is_neg:
-        strvalue = strvalue[1:]
+        textvalue = textvalue[1:]
 
-    strdigits = strvalue.split('.')
+    strdigits = textvalue.split('.')
     if len(strdigits) == 1:
         intg_digits = strdigits[0]
         frac_digits = ''
@@ -249,6 +249,29 @@ def encode_decimal(value):
     from pprint import pprint
     pprint(locals())
     return DYN_COL_DECIMAL, header + bytes(buf)
+
+
+def decimal_to_text(value):
+    """
+    text_type() of a Decimal can sometimes return "engineering notation" which
+    isn't what we want - in that case, we convert it out to a full string
+    representation
+    """
+    textvalue = text_type(value)
+    if 'E' in textvalue:
+        dtup = value.as_tuple()
+        textvalue = ''.join(text_type(d) for d in dtup.digits)
+        if dtup.exponent > 0:
+            textvalue += '0' * dtup.exponent
+        elif dtup.exponent < 0:
+            textvalue = (
+                textvalue[:dtup.exponent] +
+                '.' +
+                textvalue[dtup.exponent:]
+            )
+        if dtup.sign == 1:
+            textvalue = '-' + textvalue
+    return textvalue
 
 dig2bytes = [0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
 
