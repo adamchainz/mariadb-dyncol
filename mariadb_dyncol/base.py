@@ -196,7 +196,7 @@ def encode_string(value):
 
 
 def encode_decimal(value):
-    print(value)
+    print "encode_decimal: ", value
     strvalue = str(value)
 
     if strvalue in ('-0', '0'):
@@ -237,7 +237,7 @@ def encode_decimal(value):
         buf.extend(encgroup)
 
     if is_neg:
-        buf = [b ^ 0xFF for b in buf]
+        buf = bytearray(b ^ 0xFF for b in buf)
 
     buf[0] ^= 0x80  # Flip the top bit
 
@@ -421,6 +421,8 @@ def decode_string(encvalue):
 
 
 def decode_decimal(encvalue):
+    from tests.base import hexs
+    print "decode_decimal:", hexs(encvalue)
     if encvalue == b'':
         return Decimal(0)
     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
@@ -430,7 +432,7 @@ def decode_decimal(encvalue):
     is_neg = not (buf[0] & 0x80)
 
     if is_neg:
-        buf = [b ^ 0xFF for b in buf]
+        buf = bytearray(b ^ 0xFF for b in buf)
 
     buf[0] ^= 0x80  # Flip top bit (back)
 
@@ -446,8 +448,8 @@ def decode_decimal(encvalue):
 
     intg_digit_groups = []
     while intg_buf:
-        intg_digit_groups.append(intg_buf[-9:])
-        intg_buf = intg_buf[:-9]
+        intg_digit_groups.append(intg_buf[-4:])
+        intg_buf = intg_buf[:-4]
 
     for group in reversed(intg_digit_groups):
         value, = struct_unpack('>I', group.rjust(4, b'\x00'))
@@ -455,8 +457,8 @@ def decode_decimal(encvalue):
 
     frac_digit_groups = []
     while frac_buf:
-        frac_digit_groups.append(frac_buf[:9])
-        frac_buf = frac_buf[9:]
+        frac_digit_groups.append(frac_buf[:4])
+        frac_buf = frac_buf[4:]
 
     for group in frac_digit_groups:
         value, = struct_unpack('>I', group.rjust(4, b'\x00'))
@@ -464,10 +466,11 @@ def decode_decimal(encvalue):
 
     sign = 1 if is_neg else 0
     exponent = -num_frac
+    val = Decimal((sign, digits, exponent))
 
     from pprint import pprint
     pprint(locals())
-    return Decimal((sign, digits, exponent))
+    return val
 
 
 def decode_datetime(encvalue):

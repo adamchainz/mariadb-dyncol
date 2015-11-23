@@ -27,7 +27,13 @@ valid_ints = integers(
 valid_floats = floats().filter(
     lambda f: not isnan(f) and not isinf(f)
 )
-valid_decimals = decimals()
+
+
+def _is_valid_decimal(v):
+    dectup = v.as_tuple()
+    return len(dectup.digits) <= 65
+
+valid_decimals = decimals().filter(_is_valid_decimal)
 valid_datetimes = datetimes(timezones=[])
 valid_dates = deepcopy(valid_datetimes).map(lambda dt: dt.date())
 valid_times = deepcopy(valid_datetimes).map(lambda dt: dt.time())

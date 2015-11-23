@@ -231,7 +231,29 @@ def test_decimal_0():
 
 
 def test_decimal_1():
-    check({'a': Decimal('1.')}, b'04010001000000040061010081')
+    check({'a': Decimal('1')}, b'04010001000000040061010081')
+
+
+def test_decimal_minus_1():
+    check({'a': Decimal('-1')}, b'0401000100000004006101007e')
+
+
+def test_two_decimals():
+    check(
+        {'0': Decimal('0'), '1': Decimal('0')},
+        b'040200020000000400010004003031'
+    )
+
+
+def test_0_1():
+    check({'a': Decimal('0.1')}, b'0401000100000004006101018001')
+
+
+def test_large_frac():
+    check(
+        {'a': Decimal('0.280036520019073698')},
+        b'0401000100000004006101128010b104a801230aa2'
+    )
 
 
 def test_decimal_123456789():
