@@ -30,6 +30,9 @@ valid_floats = floats().filter(
 
 
 def _is_valid_decimal(v):
+    if str(v) in ('Infinity', '-Infinity', 'NaN'):
+        return False
+
     dectup = v.as_tuple()
     return len(dectup.digits) <= 65
 

@@ -199,6 +199,11 @@ def encode_decimal(value):
     print "encode_decimal: ", value
     strvalue = str(value)
 
+    if strvalue in ('Infinity', '-Infinity', 'NaN'):
+        raise DynColValueError(
+            "Decimal value not encodeable: {}".format(value)
+        )
+
     if strvalue in ('-0', '0'):
         return DYN_COL_DECIMAL, b''
 

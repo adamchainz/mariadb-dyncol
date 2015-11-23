@@ -238,40 +238,40 @@ def test_decimal_minus_1():
     check({'a': Decimal('-1')}, b'0401000100000004006101007e')
 
 
-def test_two_decimals():
+def test_decimal_twice():
     check(
         {'0': Decimal('0'), '1': Decimal('0')},
         b'040200020000000400010004003031'
     )
 
 
-def test_0_1():
+def test_decimal_0_1():
     check({'a': Decimal('0.1')}, b'0401000100000004006101018001')
 
 
-def test_0_12():
+def test_decimal_0_12():
     check({'a': Decimal('0.12')}, b'040100010000000400610102800c')
 
 
-def test_0_123():
+def test_decimal_0_123():
     check({'a': Decimal('0.123')}, b'04010001000000040061010380007b')
 
 
-def test_0_1234567891():
+def test_decimal_0_1234567891():
     check(
         {'a': Decimal('0.1234567891')},
         b'04010001000000040061010a80075bcd1501'
     )
 
 
-def test_0_12345678912():
+def test_decimal_0_12345678912():
     check(
         {'a': Decimal('0.12345678912')},
         b'04010001000000040061010b80075bcd150c'
     )
 
 
-def test_large_frac():
+def test_decimal_large_frac():
     check(
         {'a': Decimal('0.111111110011111111')},
         b'04010001000000040061011280069f6bc600a98ac7'
@@ -285,6 +285,21 @@ def test_decimal_123456789():
 def test_decimal_123456789_5():
     check({'a': Decimal('123456789.5')},
           b'040100010000000400610901875bcd1505')
+
+
+def test_decimal_infinity_not_stored():
+    with pytest.raises(DynColValueError):
+        pack({"a": Decimal('Infinity')})
+
+
+def test_decimal_minus_infinity_not_stored():
+    with pytest.raises(DynColValueError):
+        pack({"a": Decimal('-Infinity')})
+
+
+def test_decimal_NaN_not_stored():
+    with pytest.raises(DynColValueError):
+        pack({"a": Decimal('NaN')})
 
 
 def test_datetime():
