@@ -1,7 +1,7 @@
 hypothesis==1.14.0
 mysqlclient==1.3.7
 py==1.4.30
-pytest==2.8.2
+pytest==2.8.3
 pytz==2015.7
 six==1.10.0
 twine==1.6.4
