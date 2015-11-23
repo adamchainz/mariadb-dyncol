@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 from datetime import date, datetime, time
 from decimal import Decimal
@@ -196,7 +196,7 @@ def encode_string(value):
 
 
 def encode_decimal(value):
-    print "encode_decimal: ", value
+    print("encode_decimal: ", value)
     textvalue = decimal_to_text(value)
 
     if textvalue in ('Infinity', '-Infinity', 'NaN'):
@@ -450,7 +450,7 @@ def decode_string(encvalue):
 
 def decode_decimal(encvalue):
     from tests.base import hexs
-    print "decode_decimal:", hexs(encvalue)
+    print("decode_decimal:", hexs(encvalue))
     if encvalue == b'':
         return Decimal(0)
     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
