@@ -426,6 +426,7 @@ def decode_decimal(encvalue):
     if encvalue == b'':
         return Decimal(0)
     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
+    exponent = -num_frac
 
     buf = bytearray(encvalue[2:])
 
@@ -454,18 +455,20 @@ def decode_decimal(encvalue):
     for group in reversed(intg_digit_groups):
         value, = struct_unpack('>I', group.rjust(4, b'\x00'))
         digits.extend(int(x) for x in str(value))
+        print "digits:", digits
 
-    frac_digit_groups = []
     while frac_buf:
-        frac_digit_groups.append(frac_buf[:4])
+        piece_digits = min(9, num_frac)
+        num_frac -= piece_digits
+
+        piece = frac_buf[:4].rjust(4, b'\x00')
         frac_buf = frac_buf[4:]
 
-    for group in frac_digit_groups:
-        value, = struct_unpack('>I', group.rjust(4, b'\x00'))
+        value, = struct_unpack('>I', piece)
+        value = text_type(value).rjust(piece_digits, '0')
         digits.extend(int(x) for x in str(value))
 
     sign = 1 if is_neg else 0
-    exponent = -num_frac
     val = Decimal((sign, digits, exponent))
 
     from pprint import pprint
