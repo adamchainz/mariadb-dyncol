@@ -84,19 +84,16 @@ one of the supported data types:
 
 * ``int`` between ``-(2 ** 32) + 1`` and ``(2 ** 64) - 1`` (Python 2: ``long``
   is supported too)
-* ``str`` up to 4GB encoded in UTF-8 (Python 2: ``unicode``)
 * ``float`` - anything except ``NaN`` or ``+/- inf``
+* ``str`` - up to 4GB encoded in UTF-8 (Python 2 type: ``unicode``)
+* ``decimal.Decimal`` - 65 total digits, max 30 after the decimal point.
+  `Infinity`, `-Infinity`, and `NaN` are not supported.
 * ``datetime.datetime`` - full range supported
 * ``datetime.date`` - full range supported
 * ``datetime.time`` - full range supported
 * Any ``dict`` that is valid by these rules, allowing nested keys. There is no
   nesting limit except from for MariaDB's ``COLUMN_JSON`` function which
   restricts the depth to 10
-
-Note that this does not support the ``DECIMAL`` type that MariaDB does (and
-would naturally map to Python's ``Decimal``) - it is a little more fiddly to
-pack/unpack, though certainly possible, and pull requests are welcomed. If you
-try and pack a ``Decimal``, a ``DynColNotSupported`` exception will be raised.
 
 There are other restrictions on the UTF-8 encoded column names as documented in
 MariaDB:
@@ -105,8 +102,8 @@ MariaDB:
 * The maximum length of all column names (at one level in nested hierarchies)
   is 65535 bytes
 
-All other unsupported types will raise a ``DynColTypeError``. Out of range
-values will raise a ``DynColValueError``.
+All other unsupported types will raise a ``DynColTypeError``. Values that are
+out of range or unsupported special cases will raise a ``DynColValueError``.
 
 Examples:
 
@@ -116,6 +113,11 @@ Examples:
     b'\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02'
     >>> mariadb_dyncol.pack({"a": "💩"})
     b'\x04\x01\x00\x01\x00\x00\x00\x03\x00a!\xf0\x9f\x92\xa9'
+    >>> mariadb_dyncol.pack({"a": Decimal("Infinity")})
+    Traceback (most recent call last):
+      ...
+    mariadb_dyncol.base.DynColValueError: Decimal value not encodeable: Infinity
+
 
 ``unpack(bytestring)``
 ----------------------
@@ -125,12 +127,10 @@ you can expect back are those listed above. This is suitable for fetching the
 data direct from MariaDB and decoding in Python as opposed to with MariaDB's
 ``COLUMN_JSON`` function, preserving the types that JSON discards.
 
-As noted above, ``DECIMAL`` values are not supported, and unpacking this
-will raise ``DynColNotSupported``. Also strings will only be decoded with the
-MySQL charsets ``utf8`` or ``utf8mb4``; strings with other charsets will raise
-``DynColNotSupported`` as well.
+Strings will only be decoded with the MySQL charsets ``utf8`` or ``utf8mb4``;
+strings with other charsets will raise ``DynColNotSupported``.
 
-Unsupported column formats, for example the old MariaDB numbered dynamic
+Unsupported column formats, for example the pre-10.0 MariaDB numbered dynamic
 columns format, or corrupt data, will raise ``DynColValueError``.
 
 Examples:
