@@ -62,7 +62,7 @@ def check_against_db(dicty, byte_string):
         # Disabled because I found a bug:
         # https://mariadb.atlassian.net/browse/MDEV-9167
         # cursor.execute("SELECT COLUMN_CHECK(%s) AS r", (byte_string,))
-        # print "Query:", cursor._last_executed
+        # print("Query:", cursor._last_executed)
         # result = cursor.fetchone()[0]
         # assert result == 1, (
         #     "MariaDB did not validate %s" % hexs(byte_string)
@@ -71,7 +71,6 @@ def check_against_db(dicty, byte_string):
         sql, params = column_create(dicty)
         sql = 'SELECT ' + sql + ' AS v'
         cursor.execute(sql, params)
-        print("Query:", cursor._last_executed)
         result = cursor.fetchone()[0]
         assert hexs(byte_string) == hexs(result)
     finally:

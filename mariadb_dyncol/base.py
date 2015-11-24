@@ -196,7 +196,6 @@ def encode_string(value):
 
 
 def encode_decimal(value):
-    print("encode_decimal: ", value)
     dtup = value.as_tuple()
 
     if dtup.exponent in ('F', 'n'):  # Infinity, NaN
@@ -228,8 +227,6 @@ def encode_decimal(value):
             .format(value)
         )
 
-    print(intg_digits, frac_digits)
-
     header = struct_pack('>BB', len(intg_digits), len(frac_digits))
 
     buf = bytearray()
@@ -259,8 +256,6 @@ def encode_decimal(value):
 
     buf[0] ^= 0x80  # Flip the top bit
 
-    from pprint import pprint
-    pprint(locals())
     return DYN_COL_DECIMAL, header + bytes(buf)
 
 
@@ -449,8 +444,6 @@ def decode_string(encvalue):
 
 
 def decode_decimal(encvalue):
-    from tests.base import hexs
-    print("decode_decimal:", hexs(encvalue))
     if encvalue == b'':
         return Decimal(0)
     num_intg, num_frac = struct_unpack('>BB', encvalue[:2])
@@ -499,11 +492,7 @@ def decode_decimal(encvalue):
         digits.extend(int(x) for x in value)
 
     sign = 1 if is_neg else 0
-    val = Decimal((sign, digits, exponent))
-
-    from pprint import pprint
-    pprint(locals())
-    return val
+    return Decimal((sign, digits, exponent))
 
 
 def decode_datetime(encvalue):
