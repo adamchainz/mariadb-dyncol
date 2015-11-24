@@ -219,8 +219,14 @@ def encode_decimal(value):
             frac_digits
         )
 
-    if not intg_digits:  # normalization - not strictly necessary
+    if not intg_digits:  # normalization - made necessary by mysqlclient
         intg_digits = [0]
+
+    if (len(intg_digits) + len(frac_digits)) > 65:
+        raise DynColValueError(
+            "Decimal value not encodeable due to too many digits: {}"
+            .format(value)
+        )
 
     print(intg_digits, frac_digits)
 

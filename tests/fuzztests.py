@@ -33,8 +33,26 @@ def _is_valid_decimal(v):
     if str(v) in ('Infinity', '-Infinity', 'NaN'):
         return False
 
-    dectup = v.as_tuple()
-    return len(dectup.digits) <= 65
+    # The following code is copied from encode_decimal, but it's necessary
+    dtup = v.as_tuple()
+
+    digits = list(dtup.digits)
+    if dtup.exponent >= 0:
+        intg_digits = digits
+        intg_digits.extend([0] * dtup.exponent)
+        frac_digits = []
+    elif dtup.exponent < 0:
+        intg_digits = digits[:dtup.exponent]
+        frac_digits = digits[dtup.exponent:]
+        frac_digits = (
+            [0] * (-dtup.exponent - len(frac_digits)) +
+            frac_digits
+        )
+
+    if not intg_digits:  # normalization - made necessary by mysqlclient
+        intg_digits = [0]
+
+    return (len(intg_digits) + len(frac_digits)) <= 65
 
 valid_decimals = decimals().filter(_is_valid_decimal)
 valid_datetimes = datetimes(timezones=[])

@@ -328,6 +328,16 @@ def test_decimal_NaN_not_stored():
         pack({"a": Decimal('NaN')})
 
 
+def test_decimal_too_many_digits_not_stored():
+    with pytest.raises(DynColValueError):
+        pack({"a": Decimal('1' * 66)})
+
+
+def test_decimal_too_many_digits_not_stored_2():
+    with pytest.raises(DynColValueError):
+        pack({"a": Decimal('1E66')})
+
+
 def test_datetime():
     check(
         {"a": datetime(year=1989, month=10, day=4,
