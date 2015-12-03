@@ -72,6 +72,7 @@ def check_against_db(dicty, byte_string):
         sql = 'SELECT ' + sql + ' AS v'
         cursor.execute(sql, params)
         result = cursor.fetchone()[0]
+        print(unpack(result))
         assert hexs(byte_string) == hexs(result)
     finally:
         cursor.close()

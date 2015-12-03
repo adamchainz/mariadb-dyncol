@@ -313,6 +313,29 @@ def test_decimal_123456789_5():
           b'040100010000000400610901875bcd1505')
 
 
+def test_0_100():
+    check(
+        {'a': Decimal('1.00E-1')},
+        b'040100010000000400610103800064'
+    )
+
+
+def test_1E10():
+    check(
+        {'a': Decimal('1E10')},
+        b'040100010000000400610b008a00000000'
+    )
+
+
+def test_9_999something_E_minus_7():
+    check(
+        {'a': Decimal('9.999990000009999990000010000E-7')},
+        b'',
+        hexstring_cut=True
+        # b'04010001000000040061001e800003e73b8b87c03b9ac6180001'
+    )
+
+
 def test_decimal_infinity_not_stored():
     with pytest.raises(DynColValueError):
         pack({"a": Decimal('Infinity')})

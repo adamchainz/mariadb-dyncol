@@ -218,6 +218,9 @@ def encode_decimal(value):
             frac_digits
         )
 
+    while frac_digits and frac_digits[-1] == 0:
+        frac_digits = frac_digits[:-1]
+
     if not intg_digits:  # normalization - made necessary by mysqlclient
         intg_digits = [0]
 
@@ -226,6 +229,8 @@ def encode_decimal(value):
             "Decimal value not encodeable due to too many digits: {}"
             .format(value)
         )
+
+    print(intg_digits, frac_digits)
 
     header = struct_pack('>BB', len(intg_digits), len(frac_digits))
 
