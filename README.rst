@@ -5,7 +5,7 @@ mariadb-dyncol
 .. image:: https://img.shields.io/pypi/v/mariadb-dyncol.svg
     :target: https://pypi.python.org/pypi/mariadb-dyncol
 
-.. image:: https://travis-ci.org/adamchainz/mariadb-dyncol.png?branch=master
+.. image:: https://img.shields.io/travis/adamchainz/mariadb-dyncol/master.svg
         :target: https://travis-ci.org/adamchainz/mariadb-dyncol
 
 .. image:: https://img.shields.io/pypi/dm/mariadb-dyncol.svg
