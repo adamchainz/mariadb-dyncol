@@ -1,8 +1,7 @@
-import os
 from copy import deepcopy
 from math import isnan, isinf
 
-from hypothesis import Settings, assume, given
+from hypothesis import assume, given
 from hypothesis.extra.datetime import datetimes
 from hypothesis.strategies import (
     dictionaries, text, integers, floats, recursive
@@ -11,9 +10,6 @@ from hypothesis.strategies import (
 from mariadb_dyncol import DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
 from .base import check_against_db
-
-Settings.default.max_examples = int(os.getenv('HYPOTHESIS_MAX_EXAMPLES', 100))
-
 
 valid_keys = text(
     min_size=1,
@@ -37,11 +33,11 @@ valid_times = deepcopy(valid_datetimes).map(lambda dt: dt.time())
 
 
 def valid_dictionaries(keys, values):
-    return dictionaries(keys, values).filter(
+    return dictionaries(keys, values, average_size=7).filter(
         lambda data: (
             sum(len(key.encode('utf-8')) for key in data) <=
             MAX_TOTAL_NAME_LENGTH
-        )
+        ),
     )
 
 
