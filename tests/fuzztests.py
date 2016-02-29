@@ -33,7 +33,7 @@ valid_times = deepcopy(valid_datetimes).map(lambda dt: dt.time())
 
 
 def valid_dictionaries(keys, values):
-    return dictionaries(keys, values, average_size=7).filter(
+    return dictionaries(keys, values, average_size=5).filter(
         lambda data: (
             sum(len(key.encode('utf-8')) for key in data) <=
             MAX_TOTAL_NAME_LENGTH
