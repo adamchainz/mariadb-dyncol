@@ -28,7 +28,7 @@ Features
 * Sensible type mapping from Python to SQL
 * Tested on Python 2.7, 3.4, and 3.5
 * Tested against examples from MariaDB, including property/fuzz testing with
-  `hypothesis <http://hypothesis.readthedocs.org/en/latest/>`_ (which is
+  `hypothesis <https://hypothesis.readthedocs.io/en/latest/>`_ (which is
   amazing and found many bugs)
 
 Why?
