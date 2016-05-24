@@ -4,10 +4,7 @@ import os
 import re
 import sys
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import find_packages, setup
 
 
 def get_version(package):
@@ -31,9 +28,6 @@ version = get_version('mariadb_dyncol')
 
 
 if sys.argv[-1] == 'publish':
-    if os.system("pip freeze | grep wheel"):
-        print("wheel not installed.\nUse `pip install wheel`.\nExiting.")
-        sys.exit()
     if os.system("pip freeze | grep twine"):
         print("twine not installed.\nUse `pip install twine`.\nExiting.")
         sys.exit()
@@ -65,7 +59,7 @@ setup(
     author="Adam Johnson",
     author_email='me@adamj.eu',
     url='https://github.com/adamchainz/mariadb-dyncol',
-    packages=get_packages('mariadb_dyncol'),
+    packages=find_packages(exclude=['test', 'test.*']),
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
