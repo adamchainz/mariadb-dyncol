@@ -3,10 +3,14 @@
 History
 -------
 
-1.2.0 (pending)
+Pending release
 ---------------
 
-* pending
+* New release notes go here
+
+1.2.0 (2016-05-24)
+------------------
+
 * Disallowed ``str`` values on Python 2 - always use ``unicode``
 * Added a benchmark script and made some optimizations that add up to a speed
   boost of about 10%.
