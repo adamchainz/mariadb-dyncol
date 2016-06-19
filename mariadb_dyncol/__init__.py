@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
-from .base import (  # noqa
-    DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError,
-    pack, unpack,
-)
+from .base import DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError, pack, unpack
 
 __author__ = 'Adam Johnson'
 __email__ = 'me@adamj.eu'
 __version__ = '1.2.0'
+
+__all__ = ('DynColLimitError', 'DynColNotSupported', 'DynColTypeError', 'DynColValueError', 'pack', 'unpack')

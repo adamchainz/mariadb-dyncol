@@ -1,14 +1,13 @@
 from copy import deepcopy
-from math import isnan, isinf
+from math import isinf, isnan
 
 from hypothesis import assume, given
 from hypothesis.extra.datetime import datetimes
-from hypothesis.strategies import (
-    dictionaries, text, integers, floats, recursive
-)
+from hypothesis.strategies import dictionaries, floats, integers, recursive, text
 
 from mariadb_dyncol import DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
+
 from .base import check_against_db
 
 valid_keys = text(

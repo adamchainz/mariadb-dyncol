@@ -10,10 +10,6 @@ insert_final_newline = true
 charset = utf-8
 end_of_line = lf
 
-[*.py]
-multi_line_output=5
-known_first_party=mariadb_dyncol
-
 [*.bat]
 indent_style = tab
 end_of_line = crlf
