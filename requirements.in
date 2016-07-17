@@ -1,0 +1,10 @@
+docutils
+flake8
+hypothesis
+isort
+multilint
+mysqlclient
+pytest
+Pygments
+pytz
+six
