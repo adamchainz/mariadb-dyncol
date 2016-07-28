@@ -8,9 +8,6 @@ mariadb-dyncol
 .. image:: https://img.shields.io/travis/adamchainz/mariadb-dyncol/master.svg
         :target: https://travis-ci.org/adamchainz/mariadb-dyncol
 
-.. image:: https://img.shields.io/pypi/dm/mariadb-dyncol.svg
-        :target: https://pypi.python.org/pypi/mariadb-dyncol
-
 Pack/unpack Python ``dict``\s into/out of MariaDB's **Dynamic Columns** format.
 
 A quick example:
