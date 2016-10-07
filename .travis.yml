@@ -1,4 +1,3 @@
-# Config file for automatic testing at travis-ci.org
 sudo: false
 
 notifications:
@@ -6,10 +5,11 @@ notifications:
 
 language: python
 python: 3.5
+cache: pip
 addons:
     mariadb: 10.0
 
 install:
   - pip install tox
-
-script: HYPOTHESIS_MAX_EXAMPLES=1000 tox
+script:
+  - HYPOTHESIS_MAX_EXAMPLES=1000 tox
