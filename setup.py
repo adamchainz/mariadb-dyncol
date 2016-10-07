@@ -15,15 +15,6 @@ def get_version(package):
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-def get_packages(package):
-    """
-    Return root package and all sub-packages.
-    """
-    return [dirpath
-            for dirpath, dirnames, filenames in os.walk(package)
-            if os.path.exists(os.path.join(dirpath, '__init__.py'))]
-
-
 version = get_version('mariadb_dyncol')
 
 
@@ -46,10 +37,6 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 
-requirements = [
-    'six==1.9.0',
-]
-
 setup(
     name='mariadb-dyncol',
     version=version,
@@ -61,7 +48,9 @@ setup(
     url='https://github.com/adamchainz/mariadb-dyncol',
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=[
+        'six==1.9.0',
+    ],
     license="BSD",
     zip_safe=False,
     keywords='MariaDB',
