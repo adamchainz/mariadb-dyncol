@@ -59,7 +59,7 @@ setup(
     author="Adam Johnson",
     author_email='me@adamj.eu',
     url='https://github.com/adamchainz/mariadb-dyncol',
-    packages=find_packages(exclude=['test', 'test.*']),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
