@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import binascii
 from datetime import date, datetime, time
 
-import MySQLdb
+import pymysql
 import six
 
 from mariadb_dyncol import pack, unpack
@@ -38,7 +38,7 @@ connection = None
 def get_connection():
     global connection
     if connection is None:
-        connection = MySQLdb.connect(
+        connection = pymysql.connect(
             host='localhost',
             charset='utf8',
         )
