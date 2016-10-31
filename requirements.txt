@@ -22,4 +22,4 @@ pytz==2016.7
 six==1.10.0
 spark-parser==1.4.0       # via uncompyle6
 uncompyle6==2.9.3         # via hypothesis
-xdis==3.2.0               # via uncompyle6
+xdis==3.2.1               # via uncompyle6
