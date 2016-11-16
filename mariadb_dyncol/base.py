@@ -438,6 +438,7 @@ def decode_time(encvalue):
             hour=(val >> 12)
         )
 
+
 DECODE_FUNCS = {
     DYN_COL_INT: decode_int,
     DYN_COL_UINT: decode_uint,
