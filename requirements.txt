@@ -20,7 +20,7 @@ pyflakes==1.5.0           # via flake8
 Pygments==2.2.0
 PyMySQL==0.7.10
 pyparsing==2.2.0          # via packaging
-pytest==3.0.6
+pytest==3.0.7
 pytz==2016.10
 six==1.10.0
 
