@@ -18,7 +18,7 @@ py==1.4.33                # via pytest
 pycodestyle==2.3.1        # via flake8
 pyflakes==1.5.0           # via flake8
 pygments==2.2.0
-pymysql==0.7.10
+pymysql==0.7.11
 pyparsing==2.2.0          # via packaging
 pytest==3.0.7
 pytz==2017.2
