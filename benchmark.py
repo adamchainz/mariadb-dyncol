@@ -7,6 +7,7 @@ import time
 from contextlib import contextmanager
 
 import six
+
 from tests import base, test_mariadb_dyncol
 
 
@@ -40,7 +41,7 @@ def get_test_funcs():
         if hasattr(testfunc, 'slow'):
             continue
 
-        if hasattr(testfunc, 'skipif') and testfunc.skipif.args[0] == True:
+        if hasattr(testfunc, 'skipif') and testfunc.skipif.args[0]:
             continue
 
         funcs.append(testfunc)
@@ -70,6 +71,7 @@ def captured_stdout():
        self.assertEqual(stdout.getvalue(), "hello\n")
     """
     return captured_output("stdout")
+
 
 if __name__ == '__main__':
     main()
