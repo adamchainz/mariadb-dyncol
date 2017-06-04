@@ -9,7 +9,6 @@ import six
 
 from mariadb_dyncol import pack, unpack
 
-
 hexs = binascii.hexlify
 unhexs = binascii.unhexlify
 

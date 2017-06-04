@@ -9,6 +9,7 @@ import six
 
 from mariadb_dyncol import DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH  # private but useful in tests
+
 from .base import check, hexs, unhexs
 
 
