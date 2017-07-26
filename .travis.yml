@@ -1,4 +1,5 @@
 sudo: false
+dist: trusty
 
 notifications:
   email: false
@@ -10,6 +11,7 @@ addons:
     mariadb: 10.0
 
 install:
+  - mysql -u root -e 'SET GLOBAL max_allowed_packet = 1048576000'
   - pip install tox
 script:
   - HYPOTHESIS_MAX_EXAMPLES=1000 tox

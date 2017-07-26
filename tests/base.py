@@ -43,7 +43,6 @@ def get_connection():
         )
         cursor = connection.cursor()
         try:
-            cursor.execute("SET GLOBAL max_allowed_packet = 1048576000")
             cursor.execute("SELECT VERSION()")
             version = cursor.fetchone()[0]
         finally:
