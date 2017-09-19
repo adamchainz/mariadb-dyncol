@@ -9,7 +9,7 @@ configparser==3.5.0       # via flake8
 docutils==0.14
 enum34==1.1.6             # via flake8, hypothesis
 flake8==3.4.1
-hypothesis==3.28.0
+hypothesis==3.28.3
 isort==4.2.15
 mccabe==0.6.1             # via flake8
 multilint==2.1.0
@@ -20,4 +20,4 @@ pygments==2.2.0
 pymysql==0.7.11
 pytest==3.2.2
 pytz==2017.2
-six==1.10.0
+six==1.11.0
