@@ -20,5 +20,5 @@ pyflakes==1.6.0           # via flake8
 pygments==2.2.0
 pymysql==0.7.11
 pytest==3.2.3
-pytz==2017.2
+pytz==2017.3
 six==1.11.0
