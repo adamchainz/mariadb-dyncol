@@ -9,6 +9,7 @@ Pending release
 * New release notes go here
 * Fix a packaging error which caused the tests to be installed alongside the
   package.
+* Don't pin version of ``six`` to 1.9.0
 
 1.2.0 (2016-05-24)
 ------------------

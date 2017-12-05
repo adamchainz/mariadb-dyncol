@@ -33,7 +33,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
     install_requires=[
-        'six==1.9.0',
+        'six>=1.9.0,<2.0',
     ],
     license="BSD",
     zip_safe=False,
