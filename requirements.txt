@@ -11,7 +11,7 @@ docutils==0.14
 enum34==1.1.6             # via flake8, hypothesis
 flake8==3.5.0
 funcsigs==1.0.2           # via pytest
-hypothesis==3.44.4
+hypothesis==3.44.7
 isort==4.2.15
 mccabe==0.6.1             # via flake8
 multilint==2.2.0
@@ -21,6 +21,6 @@ pycodestyle==2.3.1        # via flake8
 pyflakes==1.6.0           # via flake8
 pygments==2.2.0
 pymysql==0.8.0
-pytest==3.3.1
+pytest==3.3.2
 pytz==2017.3
 six==1.11.0
