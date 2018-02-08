@@ -1,11 +1,11 @@
 docutils
 flake8
 futures<3.2.0
-hypothesis==3.44.14
+hypothesis
 isort
 multilint
 PyMySQL
-pytest
+pytest<3.4.0
 Pygments
 pytz
 six>=1.9.0,<2.0
