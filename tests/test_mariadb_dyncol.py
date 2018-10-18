@@ -86,19 +86,19 @@ def test_abc_123():
 
 
 def test_string_empty():
-    check({"a": ""}, b"0401000100000003006121")
+    check({"a": ""}, b"040100010000000300612d")
 
 
 def test_empty_key():
-    check({"": ""}, b"04010000000000030021")
+    check({"": ""}, b"0401000000000003002d")
 
 
 def test_string_values():
-    check({"a": "string"}, b"0401000100000003006121737472696e67")
+    check({"a": "string"}, b"040100010000000300612d737472696e67")
 
 
 def test_a_unicode_poo():
-    check({"a": "💩"}, b"0401000100000003006121f09f92a9")
+    check({"a": "💩"}, b"040100010000000300612df09f92a9")
 
 
 def test_unicode_poo_1():
@@ -126,7 +126,7 @@ def test_str_not_accepted():
 def test_large_string_data_4093_as():
     check(
         {'a': 'a' * 4093},
-        b'0401000100000003006121616161',
+        b'040100010000000300612d616161',
         hexstring_cut=True
     )
 
@@ -135,7 +135,7 @@ def test_large_string_data_4093_as():
 def test_large_string_data_4094_as():
     check(
         {'a': 'a' * 4094},
-        b'050100010000000300006121616161',
+        b'05010001000000030000612d616161',
         hexstring_cut=True
     )
 
@@ -144,7 +144,7 @@ def test_large_string_data_4094_as():
 def test_large_string_data_4095_as():
     check(
         {'a': 'a' * 4095},
-        b'050100010000000300006121616161',
+        b'05010001000000030000612d616161',
         hexstring_cut=True
     )
 
@@ -153,7 +153,7 @@ def test_large_string_data_4095_as():
 def test_large_string_data_4096_as():
     check(
         {'a': 'a' * 4096},
-        b'050100010000000300006121616161',
+        b'05010001000000030000612d616161',
         hexstring_cut=True
     )
 
@@ -162,7 +162,7 @@ def test_large_string_data_4096_as():
 def test_large_string_data_2():
     check(
         {'a': 'a' * (2 ** 13), 'b': 1},
-        b'0502000200000003000001001000026162216161',
+        b'05020002000000030000010010000261622d6161',
         hexstring_cut=True
     )
 
@@ -171,7 +171,7 @@ def test_large_string_data_2():
 def test_huge_string_data():
     check(
         {'a': 'a' * (2 ** 20)},
-        b'06010001000000030000006121616161',
+        b'0601000100000003000000612d616161',
         hexstring_cut=True
     )
 
@@ -183,7 +183,7 @@ def test_None():
 def test_dict():
     check(
         {"a": {"b": "c"}},
-        b"04010001000000080061040100010000000300622163"
+        b"04010001000000080061040100010000000300622d63"
     )
 
 
@@ -331,7 +331,7 @@ def test_two_keys():
 def test_two_keys_other():
     check(
         {"1": "AAA", "b": "BBB"},
-        b'0402000200000003000100430031622141414121424242',
+        b'0402000200000003000100430031622d4141412d424242',
     )
 
 
@@ -406,8 +406,7 @@ def test_total_name_length_overflow():
 def test_nested():
     check(
         {'falafel': {'a': 1}, 'fala': {'b': 't'}},
-        b'0402000b00000008000400c80066616c6166616c6166656c040100010000000'
-        b'3006221740401000100000000006102'
+        b'0402000b00000008000400c80066616c6166616c6166656c040100010000000300622d740401000100000000006102'
     )
 
 
