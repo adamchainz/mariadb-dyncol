@@ -8,10 +8,10 @@ language: python
 python: 3.6
 cache: pip
 addons:
-    mariadb: 10.0
+  mariadb: 10.3
 
 install:
-  - mysql -u root -e 'SET GLOBAL max_allowed_packet = 1048576000'
-  - pip install tox
+- mysql -u root -e 'SET GLOBAL max_allowed_packet = 1048576000'
+- pip install tox
 script:
-  - HYPOTHESIS_MAX_EXAMPLES=1000 tox
+- HYPOTHESIS_MAX_EXAMPLES=1000 tox
