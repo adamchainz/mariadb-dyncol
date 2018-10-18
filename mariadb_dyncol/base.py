@@ -187,13 +187,7 @@ def encode_float(value):
 
 
 def encode_string(value):
-    return DYN_COL_STRING, b'\x21' + value.encode('utf-8')
-    # 0x21 = utf8 charset number
-    # N.B. not using utf8mb4 as it appears there is a bug with emoticons being
-    # backed as question marks, e.g.
-    # > select column_json(column_create('💩', 1)) as r\G
-    # *************************** 1. row ***************************
-    # r: {"?":1}
+    return DYN_COL_STRING, b'\x2D' + value.encode('utf-8')
 
 
 def encode_decimal(value):

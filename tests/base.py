@@ -13,8 +13,8 @@ hexs = binascii.hexlify
 unhexs = binascii.unhexlify
 
 
-def check(dicty, hexstring, expected=None, hexstring_cut=False):
-    byte_string = pack(dicty)
+def check(input, hexstring, expected=None, hexstring_cut=False):
+    byte_string = pack(input)
     assert isinstance(byte_string, six.binary_type)
     hexed = hexs(byte_string)
     if hexstring_cut:
@@ -22,12 +22,12 @@ def check(dicty, hexstring, expected=None, hexstring_cut=False):
     assert hexed == hexstring
 
     # Verify against MariaDB
-    check_against_db(dicty, byte_string)
+    check_against_db(input, byte_string)
 
     unpacked = unpack(byte_string)
     # Nones are not stored and thus we shouldn't compare them
     if expected is None:
-        expected = {k: v for k, v in dicty.items() if v is not None}
+        expected = {k: v for k, v in input.items() if v is not None}
     assert unpacked == expected
 
 
@@ -39,7 +39,7 @@ def get_connection():
     if connection is None:
         connection = pymysql.connect(
             host='localhost',
-            charset='utf8',
+            charset='utf8mb4',
         )
         cursor = connection.cursor()
         try:

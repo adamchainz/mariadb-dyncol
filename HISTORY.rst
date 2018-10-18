@@ -6,7 +6,16 @@ History
 Pending release
 ---------------
 
-* New release notes go here
+.. Insert new release notes below this line
+
+* Use ``utf8mb4`` character set for encoding strings. This seemed to be broken
+  for emoji on older versions of MariaDB (10.1 or 10.2?), so ``utf8`` was
+  previously used, however this may have only been a display/``COLUMN_JSON``
+  issue on such older versions. MariaDB internally now defaults to ``utf8mb44``
+  for dynamic column strings. Since this changes the output of serialization
+  slightly, please test before upgrading. Also you probably want to use
+  ``utf8mb4`` for everything else MariaDB in your application if you aren't
+  already - it is the default on MySQL 8+.
 
 1.2.1 (2017-12-05)
 ------------------
