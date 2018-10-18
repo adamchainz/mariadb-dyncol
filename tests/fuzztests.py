@@ -10,7 +10,6 @@ from .base import check_against_db
 
 valid_keys = text(
     min_size=1,
-    average_size=10.0,
     max_size=MAX_NAME_LENGTH
 ).filter(
     lambda key: len(key.encode('utf-8')) <= MAX_NAME_LENGTH
@@ -30,7 +29,7 @@ valid_times = times()
 
 
 def valid_dictionaries(keys, values):
-    return dictionaries(keys, values, average_size=5).filter(
+    return dictionaries(keys, values).filter(
         lambda data: (
             sum(len(key.encode('utf-8')) for key in data) <=
             MAX_TOTAL_NAME_LENGTH

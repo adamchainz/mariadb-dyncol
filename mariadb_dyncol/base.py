@@ -8,10 +8,10 @@ from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
 
+from six import PY2
 from six import iteritems as six_iteritems
 from six import iterkeys as six_iterkeys
-from six import PY2, text_type
-
+from six import text_type
 from six.moves import range as six_moves_range
 
 DYN_COL_INT = 0
