@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'six>=1.9.0,<2.0',
     ],
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     license="BSD",
     zip_safe=False,
     keywords='MariaDB',
