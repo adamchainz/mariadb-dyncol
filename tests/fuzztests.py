@@ -1,9 +1,7 @@
-from copy import deepcopy
 from math import isinf, isnan
 
 from hypothesis import assume, given
-from hypothesis.extra.datetime import datetimes
-from hypothesis.strategies import dictionaries, floats, integers, recursive, text
+from hypothesis.strategies import dates, datetimes, dictionaries, floats, integers, recursive, text, times
 
 from mariadb_dyncol import DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
@@ -26,9 +24,9 @@ valid_ints = integers(
 valid_floats = floats().filter(
     lambda f: not isnan(f) and not isinf(f)
 )
-valid_datetimes = datetimes(timezones=[])
-valid_dates = deepcopy(valid_datetimes).map(lambda dt: dt.date())
-valid_times = deepcopy(valid_datetimes).map(lambda dt: dt.time())
+valid_datetimes = datetimes()
+valid_dates = dates()
+valid_times = times()
 
 
 def valid_dictionaries(keys, values):
