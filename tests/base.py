@@ -13,22 +13,27 @@ hexs = binascii.hexlify
 unhexs = binascii.unhexlify
 
 
-def check(input, hexstring, expected=None, hexstring_cut=False):
-    byte_string = pack(input)
-    assert isinstance(byte_string, six.binary_type)
-    hexed = hexs(byte_string)
-    if hexstring_cut:
-        hexed = hexed[:len(hexstring)]
-    assert hexed == hexstring
+def check(input, expected=None, expected_prefix=None):
+    if expected is not None:
+        assert expected_prefix is None
 
-    # Verify against MariaDB
-    check_against_db(input, byte_string)
+    packed = pack(input)
+    assert isinstance(packed, six.binary_type)
 
-    unpacked = unpack(byte_string)
+    packed_hex = hexs(packed)
+    if expected is not None:
+        assert packed_hex == expected
+    elif expected_prefix is not None:
+        packed_hex_prefix = packed_hex[:len(expected_prefix)]
+        assert packed_hex_prefix == expected_prefix
+
+    check_against_db(input, packed)
+
+    unpacked = unpack(packed)
+
     # Nones are not stored and thus we shouldn't compare them
-    if expected is None:
-        expected = {k: v for k, v in input.items() if v is not None}
-    assert unpacked == expected
+    expected_unpacked = {k: v for k, v in input.items() if v is not None}
+    assert unpacked == expected_unpacked
 
 
 connection = None
