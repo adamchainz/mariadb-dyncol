@@ -8,6 +8,9 @@ Pending release
 
 .. Insert new release notes below this line
 
+2.0.0 (2018-10-20)
+------------------
+
 * Use ``utf8mb4`` character set for encoding strings. This seemed to be broken
   for emoji on older versions of MariaDB (10.1 or 10.2?), so ``utf8`` was
   previously used, however this may have only been a display/``COLUMN_JSON``
