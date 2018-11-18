@@ -9,7 +9,7 @@ atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via hypothesis, pytest
 cffi==1.11.5              # via cryptography
 configparser==3.5.0       # via flake8
-cryptography==2.3.1       # via pymysql
+cryptography==2.4.1       # via pymysql
 docutils==0.14
 enum34==1.1.6             # via cryptography, flake8, hypothesis
 flake8==3.6.0
@@ -30,7 +30,7 @@ pycparser==2.19           # via cffi
 pyflakes==2.0.0           # via flake8
 pygments==2.2.0
 pymysql==0.9.2
-pytest==3.10.0
+pytest==4.0.0
 pytz==2018.7
 scandir==1.9.0            # via pathlib2
 six==1.11.0
