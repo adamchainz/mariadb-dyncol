@@ -15,8 +15,8 @@ enum34==1.1.6             # via cryptography, flake8, hypothesis
 flake8==3.6.0
 funcsigs==1.0.2           # via pytest
 futures==3.1.1
-hypothesis==3.82.1
-idna==2.7                 # via cryptography
+hypothesis==3.82.4
+idna==2.8                 # via cryptography
 ipaddress==1.0.22         # via cryptography
 isort==4.3.4
 mccabe==0.6.1             # via flake8
