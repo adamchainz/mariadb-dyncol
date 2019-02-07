@@ -1,18 +1,9 @@
-# -*- coding:utf-8 -*-
-from __future__ import unicode_literals
-
 from datetime import date, datetime, time
 from decimal import Decimal
 from math import isinf, isnan
 from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
-
-from six import PY2
-from six import iteritems as six_iteritems
-from six import iterkeys as six_iterkeys
-from six import text_type
-from six.moves import range as six_moves_range
 
 DYN_COL_INT = 0
 DYN_COL_UINT = 1
@@ -67,10 +58,10 @@ def pack(dicty):
 
     dicty_names_encoded = {
         key.encode('utf-8'): value
-        for key, value in six_iteritems(dicty)
+        for key, value in dicty.items()
     }
 
-    for encname in sorted(six_iterkeys(dicty_names_encoded), key=name_order):
+    for encname in sorted(dicty_names_encoded.keys(), key=name_order):
         value = dicty_names_encoded[encname]
         if value is None:
             continue
@@ -254,14 +245,10 @@ ENCODE_FUNCS = {
     datetime: encode_datetime,
     time: encode_time,
     float: encode_float,
-    text_type: encode_string,
+    str: encode_string,
     Decimal: encode_decimal,
     dict: encode_dict,
 }
-
-if PY2:
-    from __builtin__ import long  # Avoid python 3 lint error
-    ENCODE_FUNCS[long] = encode_int
 
 
 def unpack(buf):
@@ -290,7 +277,7 @@ def unpack(buf):
     last_data_offset = None
     last_dtype = None
 
-    for i in six_moves_range(column_count):
+    for i in range(column_count):
         if coldata_size % 2 == 0:
             name_offset, data_offset_dtype = struct_unpack_from(
                 '<H' + data_offset_code,
@@ -333,7 +320,7 @@ def unpack(buf):
     # join data and names
     return {
         names[i]: values[i]
-        for i in six_moves_range(column_count)
+        for i in range(column_count)
     }
 
 

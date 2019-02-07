@@ -19,11 +19,21 @@ A quick example:
     >>> mariadb_dyncol.unpack(mariadb_dyncol.pack({"key": "value"}))
     {'key': 'value'}
 
+Installation
+============
+
+Use **pip**:
+
+.. code-block:: sh
+
+    pip install mariadb-dyncol
+
+Tested on Python 3.6. Python 3.4+ supported.
+
 Features
 ========
 
 * Sensible type mapping from Python to SQL
-* Tested on Python 2.7 and 3.6
 * Tested against examples from MariaDB, including property/fuzz testing with
   `hypothesis <https://hypothesis.readthedocs.io/en/latest/>`_ (which is
   amazing and found many bugs)
