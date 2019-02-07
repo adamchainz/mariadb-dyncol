@@ -1,11 +1,7 @@
-# -*- coding:utf-8 -*-
-from __future__ import unicode_literals
-
 import binascii
 from datetime import date, datetime, time
 
 import pymysql
-import six
 
 from mariadb_dyncol import pack, unpack
 
@@ -18,7 +14,7 @@ def check(input, expected=None, expected_prefix=None):
         assert expected_prefix is None
 
     packed = pack(input)
-    assert isinstance(packed, six.binary_type)
+    assert isinstance(packed, bytes)
 
     packed_hex = hexs(packed)
     if expected is not None:
@@ -83,7 +79,7 @@ def column_create(dicty):
 
     sql = []
     params = []
-    for key, value in six.iteritems(dicty):
+    for key, value in dicty.items():
         sql.append('%s')
         params.append(key)
         if isinstance(value, dict):
@@ -92,11 +88,11 @@ def column_create(dicty):
             params.extend(subparams)
         elif value is None:
             sql.append('NULL')
-        elif isinstance(value, six.integer_types + six.string_types):
+        elif isinstance(value, (int, str)):
             sql.append('%s')
             params.append(value)
         elif isinstance(value, float):
-            # str(float) broken on Python 2, breaks the query
+            # str(float) breaks the query, instead use repr direct as SQL
             sql.append(repr(value) + ' AS DOUBLE')
         else:
             sql.append('%s AS ' + type_map[type(value)])

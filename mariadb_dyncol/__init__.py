@@ -1,6 +1,3 @@
-# -*- coding:utf-8 -*-
-from __future__ import unicode_literals
-
 from .base import DynColLimitError, DynColNotSupported, DynColTypeError, DynColValueError, pack, unpack
 
 __author__ = 'Adam Johnson'
