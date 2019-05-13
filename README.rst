@@ -28,7 +28,7 @@ Use **pip**:
 
     pip install mariadb-dyncol
 
-Tested on Python 3.6. Python 3.4+ supported.
+Python 3.5-3.7 supported.
 
 Features
 ========
