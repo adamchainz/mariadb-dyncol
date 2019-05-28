@@ -7,3 +7,4 @@ PyMySQL
 pytest
 Pygments
 pytz
+twine
