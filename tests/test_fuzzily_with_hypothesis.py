@@ -1,28 +1,29 @@
 from math import isinf, isnan
 
 from hypothesis import assume, given
-from hypothesis.strategies import dates, datetimes, dictionaries, floats, integers, recursive, text, times
+from hypothesis.strategies import (
+    dates,
+    datetimes,
+    dictionaries,
+    floats,
+    integers,
+    recursive,
+    text,
+    times,
+)
 
 from mariadb_dyncol import DynColValueError, pack, unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
 
 from .base import check_against_db
 
-valid_keys = text(
-    min_size=1,
-    max_size=MAX_NAME_LENGTH
-).filter(
-    lambda key: len(key.encode('utf-8')) <= MAX_NAME_LENGTH
+valid_keys = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(
+    lambda key: len(key.encode("utf-8")) <= MAX_NAME_LENGTH
 )
-valid_ints = integers(
-    min_value=-(2 ** 31 - 1),
-    max_value=(2 ** 64 - 1)
-).filter(
+valid_ints = integers(min_value=-(2 ** 31 - 1), max_value=(2 ** 64 - 1)).filter(
     lambda i: abs(i) <= (2 ** 31 - 1) or 0 <= i <= 2 ** 64 - 1
 )
-valid_floats = floats().filter(
-    lambda f: not isnan(f) and not isinf(f)
-)
+valid_floats = floats().filter(lambda f: not isnan(f) and not isinf(f))
 valid_datetimes = datetimes()
 valid_dates = dates()
 valid_times = times()
@@ -31,9 +32,8 @@ valid_times = times()
 def valid_dictionaries(keys, values):
     return dictionaries(keys, values).filter(
         lambda data: (
-            sum(len(key.encode('utf-8')) for key in data) <=
-            MAX_TOTAL_NAME_LENGTH
-        ),
+            sum(len(key.encode("utf-8")) for key in data) <= MAX_TOTAL_NAME_LENGTH
+        )
     )
 
 
@@ -77,9 +77,8 @@ def test_times(data):
 
 
 recursive_values = recursive(
-    (valid_ints | valid_floats | text() | valid_datetimes | valid_dates |
-     valid_times),
-    lambda children: valid_dictionaries(valid_keys, children)
+    (valid_ints | valid_floats | text() | valid_datetimes | valid_dates | valid_times),
+    lambda children: valid_dictionaries(valid_keys, children),
 )
 
 

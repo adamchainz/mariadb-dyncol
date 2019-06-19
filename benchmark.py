@@ -14,30 +14,31 @@ def main():
     test_funcs = get_test_funcs()
     print("Running benchmark", file=sys.stderr)
     start = time.time()
-    for i in range(nruns):
-        print(".", file=sys.stderr, end='')
+    for _ in range(nruns):
+        print(".", file=sys.stderr, end="")
         sys.stderr.flush()
         [test_func() for test_func in test_funcs]
     total = time.time() - start
-    print('\n', file=sys.stderr)
-    print("Ran all tests {} times in {} seconds = {} seconds per run".format(
-        nruns,
-        total,
-        total / nruns
-    ), file=sys.stderr)
+    print("\n", file=sys.stderr)
+    print(
+        "Ran all tests {} times in {} seconds = {} seconds per run".format(
+            nruns, total, total / nruns
+        ),
+        file=sys.stderr,
+    )
 
 
 def get_test_funcs():
     funcs = []
     for name in dir(test_mariadb_dyncol):
-        if not name.startswith('test_'):
+        if not name.startswith("test_"):
             continue
 
         testfunc = getattr(test_mariadb_dyncol, name)
-        if hasattr(testfunc, 'slow'):
+        if hasattr(testfunc, "slow"):
             continue
 
-        if hasattr(testfunc, 'skipif') and testfunc.skipif.args[0]:
+        if hasattr(testfunc, "skipif") and testfunc.skipif.args[0]:
             continue
 
         funcs.append(testfunc)
@@ -69,5 +70,5 @@ def captured_stdout():
     return captured_output("stdout")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
