@@ -24,9 +24,8 @@ chardet==3.0.4 \
     --hash=sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae \
     --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691 \
     # via requests
-docutils==0.15 \
-    --hash=sha256:54a349c622ff31c91cbec43b0b512f113b5b24daf00e2ea530bb1bd9aac14849 \
-    --hash=sha256:d2ddba74835cb090a1b627d3de4e7835c628d07ee461f7b4480f51af2fe4d448
+docutils==0.15.1.post1 \
+    --hash=sha256:f33ddb723332c6d6b6d99731ee1fc0c35eb4044a2df5cca1c64c8aa78eaf22cb
 entrypoints==0.3 \
     --hash=sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19 \
     --hash=sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451 \
@@ -37,9 +36,9 @@ flake8-bugbear==19.3.0 \
 flake8==3.7.8 \
     --hash=sha256:19241c1cbc971b9962473e4438a2ca19749a7dd002dd1a946eaba171b4114548 \
     --hash=sha256:8e9dfa3cecb2400b3738a42c54c3043e821682b9c840b0448c0503f781130696
-hypothesis==4.28.2 \
-    --hash=sha256:4da34bfc2bc8bfbda7fccbc38a1ca8e906c1a31b273805d1df435b1393859947 \
-    --hash=sha256:8564107158c6853a990c769d5155180a51c6db49c32b5eec6f6960671fde3280
+hypothesis==4.31.0 \
+    --hash=sha256:ea90434a4ad920cc39a69a4f320b9e649eb09308865677e62f5bcd3101e86d66 \
+    --hash=sha256:ee0ad8885964ffb8a5a00c0bac76b9e0576fc033e32b38c050a3559ffd48ebf9
 idna==2.8 \
     --hash=sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407 \
     --hash=sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c \
@@ -96,9 +95,9 @@ pygments==2.4.2 \
 pymysql==0.9.3 \
     --hash=sha256:3943fbbbc1e902f41daf7f9165519f140c4451c179380677e6a848587042561a \
     --hash=sha256:d8c059dcd81dedb85a9f034d5e22dcb4442c0b201908bede99e306d65ea7c8e7
-pyparsing==2.4.1 \
-    --hash=sha256:530d8bf8cc93a34019d08142593cf4d78a05c890da8cf87ffa3120af53772238 \
-    --hash=sha256:f78e99616b6f1a4745c0580e170251ef1bbafc0d0513e270c4bd281bf29d2800 \
+pyparsing==2.4.1.1 \
+    --hash=sha256:43c5486cefefa536c9aab528881c992328f020eefe4f6d06332449c365218580 \
+    --hash=sha256:d6c5ffe9d0305b9b977f7a642d36b9370954d1da7ada4c62393382cbadad4265 \
     # via packaging
 pytest==5.0.1 \
     --hash=sha256:6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d \
