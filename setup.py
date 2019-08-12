@@ -28,6 +28,11 @@ setup(
     author="Adam Johnson",
     author_email="me@adamj.eu",
     url="https://github.com/adamchainz/mariadb-dyncol",
+    project_urls={
+        "Changelog": (
+            "https://github.com/adamchainz/mariadb-dyncol/blob/master/HISTORY.rst"
+        )
+    },
     packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
     python_requires=">=3.5",
