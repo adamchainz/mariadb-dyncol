@@ -266,7 +266,7 @@ def unpack(buf):
                 "<H" + data_offset_code, column_directory, offset=i * coldata_size
             )
         else:
-            name_offset, = struct_unpack_from(
+            (name_offset,) = struct_unpack_from(
                 "<H", column_directory, offset=i * coldata_size
             )
             # can't struct_unpack the 3 bytes so hack around
@@ -274,7 +274,7 @@ def unpack(buf):
                 column_directory[i * coldata_size + 2 : (i * coldata_size + 5)]
                 + b"\x00"
             )
-            data_offset_dtype, = struct_unpack("<" + data_offset_code, dodt_bytes)
+            (data_offset_dtype,) = struct_unpack("<" + data_offset_code, dodt_bytes)
 
         data_offset_dtype &= data_offset_mask
         data_offset = data_offset_dtype >> 4
@@ -329,12 +329,12 @@ def decode_int(encvalue):
 
 
 def decode_uint(encvalue):
-    value, = struct_unpack("Q", encvalue)
+    (value,) = struct_unpack("Q", encvalue)
     return value
 
 
 def decode_double(encvalue):
-    value, = struct_unpack("d", encvalue)
+    (value,) = struct_unpack("d", encvalue)
     return value
 
 
@@ -368,13 +368,13 @@ def decode_datetime(encvalue):
 
 
 def decode_date(encvalue):
-    val, = struct_unpack("I", encvalue + b"\x00")
+    (val,) = struct_unpack("I", encvalue + b"\x00")
     return date(day=val & 0x1F, month=(val >> 5) & 0xF, year=(val >> 9))
 
 
 def decode_time(encvalue):
     if len(encvalue) == 6:
-        val, = struct_unpack("Q", encvalue + b"\x00\x00")
+        (val,) = struct_unpack("Q", encvalue + b"\x00\x00")
         return time(
             microsecond=val & 0xFFFFF,
             second=(val >> 20) & 0x3F,
@@ -382,7 +382,7 @@ def decode_time(encvalue):
             hour=(val >> 32),
         )
     else:  # must be 3
-        val, = struct_unpack("I", encvalue + b"\x00")
+        (val,) = struct_unpack("I", encvalue + b"\x00")
         return time(
             microsecond=0,
             second=(val) & 0x3F,
