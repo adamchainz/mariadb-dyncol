@@ -31,7 +31,7 @@ Use **pip**:
 
     pip install mariadb-dyncol
 
-Python 3.5-3.7 supported.
+Python 3.5-3.8 supported.
 
 Features
 ========
