@@ -12,4 +12,5 @@ PyMySQL
 pytest
 pytest-randomly
 pytz
+secretstorage # required for twine on linux
 twine
