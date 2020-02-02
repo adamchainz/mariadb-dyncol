@@ -1,4 +1,7 @@
+PyMySQL
+Pygments
 black ; python_version == '3.8.*'
+check-manifest ; python_version == '3.8.*'
 docutils
 flake8
 flake8-bugbear
@@ -7,8 +10,6 @@ flake8-tidy-imports
 hypothesis
 isort
 multilint
-Pygments
-PyMySQL
 pytest
 pytest-randomly
 pytz
