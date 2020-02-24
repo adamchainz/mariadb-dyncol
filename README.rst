@@ -29,7 +29,7 @@ Use **pip**:
 
 .. code-block:: sh
 
-    pip install mariadb-dyncol
+    python -m pip install mariadb-dyncol
 
 Python 3.5 to 3.8 supported.
 
