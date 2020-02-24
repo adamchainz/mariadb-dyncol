@@ -20,6 +20,6 @@ matrix:
 
 before_script: .travis/before_script.sh
 
-install: pip install tox-travis
+install: python -m pip install tox-travis
 
 script: HYPOTHESIS_MAX_EXAMPLES=1000 tox
