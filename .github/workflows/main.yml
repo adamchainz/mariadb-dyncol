@@ -27,11 +27,12 @@ jobs:
         ports:
         - 3306:3306
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-          MYSQL_ROOT_HOST: '%'
+          MYSQL_USER: runner
+          MYSQL_PASSWORD: password
 
     env:
       HYPOTHESIS_MAX_EXAMPLES: 1000
+      MYSQL_PASSWORD: password
 
     steps:
     - uses: actions/checkout@v2
