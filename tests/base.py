@@ -1,4 +1,5 @@
 import binascii
+import os
 from datetime import date, datetime, time
 
 import pymysql
@@ -38,7 +39,11 @@ connection = None
 def get_connection():
     global connection
     if connection is None:
-        connection = pymysql.connect(host="localhost", charset="utf8mb4")
+        connection = pymysql.connect(
+            host=os.environ.get("MYSQL_HOST", "localhost"),
+            password=os.environ.get("MYSQL_PASSWORD"),
+            charset="utf8mb4",
+        )
         cursor = connection.cursor()
         try:
             cursor.execute("SELECT VERSION()")
