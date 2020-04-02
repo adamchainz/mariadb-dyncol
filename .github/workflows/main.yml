@@ -28,12 +28,13 @@ jobs:
         - 3306:3306
         env:
           MYSQL_USER: runner
-          MYSQL_PASSWORD: password
+          MYSQL_PASSWORD: hunter2
+          MYSQL_ROOT_PASSWORD: hunter2
 
     env:
       HYPOTHESIS_MAX_EXAMPLES: 1000
       MYSQL_HOST: 127.0.0.1
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: hunter2
 
     steps:
     - uses: actions/checkout@v2
