@@ -40,7 +40,7 @@ def get_connection():
     global connection
     if connection is None:
         connection = pymysql.connect(
-            host="localhost",
+            host=os.environ.get("MYSQL_HOST", "localhost"),
             password=os.environ.get("MYSQL_PASSWORD"),
             charset="utf8mb4",
         )
