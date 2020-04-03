@@ -2,14 +2,14 @@
 mariadb-dyncol
 ==============
 
-.. image:: https://img.shields.io/pypi/v/mariadb-dyncol.svg
-    :target: https://pypi.python.org/pypi/mariadb-dyncol
-
 .. image:: https://github.com/adamchainz/mariadb-dyncol/workflows/CI/badge.svg?branch=master
-        :target: https://github.com/adamchainz/mariadb-dyncol/actions?workflow=CI
+   :target: https://github.com/adamchainz/mariadb-dyncol/actions?workflow=CI
+
+.. image:: https://img.shields.io/pypi/v/mariadb-dyncol.svg
+   :target: https://pypi.python.org/pypi/mariadb-dyncol
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/python/black
+   :target: https://github.com/python/black
 
 Pack/unpack Python ``dict``\s into/out of MariaDB's **Dynamic Columns** format.
 
