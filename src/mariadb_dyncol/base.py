@@ -95,7 +95,7 @@ def pack(dicty):
         buf.append(
             struct_pack(
                 "<" + ("H" + coldir_size_code) * (len(column_directory) // 2),
-                *column_directory
+                *column_directory,
             )
         )
     else:
