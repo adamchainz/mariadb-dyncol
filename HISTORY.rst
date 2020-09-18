@@ -2,6 +2,8 @@
 History
 =======
 
+* Change license to ISC License.
+
 3.1.0 (2019-11-15)
 ------------------
 
