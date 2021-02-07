@@ -2,7 +2,7 @@
 mariadb-dyncol
 ==============
 
-.. image:: https://img.shields.io/github/workflow/status/adamchainz/mariadb-dyncol/CI/master?style=for-the-badge
+.. image:: https://img.shields.io/github/workflow/status/adamchainz/mariadb-dyncol/CI/main?style=for-the-badge
    :target: https://github.com/adamchainz/mariadb-dyncol/actions?workflow=CI
 
 .. image:: https://img.shields.io/pypi/v/mariadb-dyncol.svg?style=for-the-badge
