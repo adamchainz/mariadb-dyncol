@@ -10,9 +10,9 @@ attrs==20.3.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.1.0 \
-    --hash=sha256:0fee2282d5a586933e448da7b4598260e17ae2bbc9e29017ebfaf11940b9291e \
-    --hash=sha256:8a9824d862495bbc49274604e2ba13287578159e87a3fd97f8a4249d723f4428
+hypothesis==6.2.0 \
+    --hash=sha256:32c1706ee12a493befb5192e91a74b355fc2d6b70ce89e21c5b54e24713fc821 \
+    --hash=sha256:c16fbde26b65c98a2464c48209b066c2f6dab5e8e38acd9d959021eb8d58b6c0
     # via -r requirements.in
 importlib-metadata==3.4.0 \
     --hash=sha256:ace61d5fc652dc280e7b6b4ff732a9c2d40db2c0f92bc6cb74e07b73d53a1771 \
@@ -55,9 +55,9 @@ pytest==6.2.2 \
     # via
     #   -r requirements.in
     #   pytest-randomly
-pytz==2020.5 \
-    --hash=sha256:16962c5fb8db4a8f63a26646d8886e9d769b6c511543557bc84e9569fb9a9cb4 \
-    --hash=sha256:180befebb1927b16f6b57101720075a984c019ac16b1b7575673bea42c6c3da5
+pytz==2021.1 \
+    --hash=sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da \
+    --hash=sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798
     # via -r requirements.in
 sortedcontainers==2.3.0 \
     --hash=sha256:37257a32add0a3ee490bb170b599e93095eed89a55da91fa9f48753ea12fd73f \
