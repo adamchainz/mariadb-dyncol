@@ -10,21 +10,17 @@ attrs==20.3.0 \
     # via
     #   hypothesis
     #   pytest
-backports.entry-points-selectable==1.0.3 \
-    --hash=sha256:0f60097faa317875ad76a4a47ae62dc3932df73a3cdad3968e6d573efa3707e3 \
-    --hash=sha256:f30bcd19c5e2728ac93821d2b6ae0a325597e0ca12324fd91a39fa80e1cd0dd8
-    # via pytest-randomly
-hypothesis==6.8.9 \
-    --hash=sha256:56b8b5a907cb558a5419b431b7f3cb68acdfd2f66359ddc0f5f72b0af86481ad \
-    --hash=sha256:e8cfd57485a86f0d67511d62adc3c1040ded71f7aae235cfce8832acc002203a
+hypothesis==6.10.0 \
+    --hash=sha256:1a00a4e3ef40041b2c072deab9c71e307bc5354bb4a102ef22ae8c23fa8b3970 \
+    --hash=sha256:9f8c130b1278d30cb3cc64e3a4aacb88c4906155772beed90ce33e06794e1ee0
     # via -r requirements.in
-importlib-metadata==3.10.0 \
-    --hash=sha256:c9db46394197244adf2f0b08ec5bc3cf16757e9590b02af1fca085c16c0d600a \
-    --hash=sha256:d2d46ef77ffc85cbf7dac7e81dd663fde71c45326131bea8033b9bad42268ebe
+importlib-metadata==4.0.0 \
+    --hash=sha256:19192b88d959336bfa6bdaaaef99aeafec179eca19c47c804e555703ee5f07ef \
+    --hash=sha256:2e881981c9748d7282b374b68e759c87745c25427b67ecf0cc67fb6637a1bff9
     # via
-    #   backports.entry-points-selectable
     #   pluggy
     #   pytest
+    #   pytest-randomly
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
     --hash=sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32
@@ -49,9 +45,9 @@ pyparsing==2.4.7 \
     --hash=sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1 \
     --hash=sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b
     # via packaging
-pytest-randomly==3.6.0 \
-    --hash=sha256:5bc4dd482827dcdc00b10ea7808e4f1376a0212e78acb1b4a81b6e9239b18b27 \
-    --hash=sha256:a62f2546f5ed565914e3f6b30e5081894748122c42cc4dbca54a2a272663b5d9
+pytest-randomly==3.7.0 \
+    --hash=sha256:89a4f98aed1753c447a3927b66571a796e53cdecbf671e7318f6c57d79c7f6a3 \
+    --hash=sha256:cd68c1da7d152509f59fec725f5314437727937fad31a50028693269c9261d90
     # via -r requirements.in
 pytest==6.2.3 \
     --hash=sha256:671238a46e4df0f3498d1c3270e5deb9b32d25134c99b7d75370a68cfbe9b634 \
