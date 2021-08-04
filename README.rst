@@ -19,7 +19,7 @@ Pack/unpack Python ``dict``\s into/out of MariaDB's **Dynamic Columns** format.
 
 A quick example:
 
-.. code-block:: python
+.. code-block:: pycon
 
     >>> mariadb_dyncol.pack({"key": "value"})
     b'\x04\x01\x00\x03\x00\x00\x00\x03\x00key!value'
@@ -131,7 +131,7 @@ values will raise a ``DynColValueError``.
 
 Examples:
 
-.. code-block:: python
+.. code-block:: pycon
 
     >>> mariadb_dyncol.pack({"a": 1})
     b'\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02'
@@ -156,9 +156,9 @@ columns format, or corrupt data, will raise ``DynColValueError``.
 
 Examples:
 
-.. code-block:: python
+.. code-block:: pycon
 
-    >>> mariadb_dyncol.unpack(b'\x04\x01\x00\x01\x00\x00\x00\x03\x00a!\xf0\x9f\x92\xa9')
+    >>> mariadb_dyncol.unpack(b"\x04\x01\x00\x01\x00\x00\x00\x03\x00a!\xf0\x9f\x92\xa9")
     {"a": "💩"}
-    >>> mariadb_dyncol.unpack(b'\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02')
+    >>> mariadb_dyncol.unpack(b"\x04\x01\x00\x01\x00\x00\x00\x00\x00a\x02")
     {"a": 1}
