@@ -72,7 +72,7 @@ def pack(dicty):
         try:
             encode_func = ENCODE_FUNCS[type(value)]
         except KeyError:
-            raise DynColTypeError("Unencodable type {}".format(type(value)))
+            raise DynColTypeError(f"Unencodable type {type(value)}")
         dtype, encvalue = encode_func(value)
 
         column_count += 1
@@ -134,7 +134,7 @@ def encode_int(value):
         dtype = DYN_COL_INT
         encvalue = -(value << 1) - 1
         if value < -(2 ** 32 - 1):
-            raise DynColValueError("int {} out of range".format(value))
+            raise DynColValueError(f"int {value} out of range")
     else:
         if value <= (2 ** 63 - 1):
             dtype = DYN_COL_INT
@@ -143,7 +143,7 @@ def encode_int(value):
             dtype = DYN_COL_UINT
             encvalue = value
         else:
-            raise DynColValueError("int {} out of range".format(value))
+            raise DynColValueError(f"int {value} out of range")
 
     to_enc = []
     while encvalue:
@@ -154,7 +154,7 @@ def encode_int(value):
 
 def encode_float(value):
     if isnan(value) or isinf(value):
-        raise DynColValueError("Float value not encodeable: {}".format(value))
+        raise DynColValueError(f"Float value not encodeable: {value}")
     encvalue = struct_pack("d", value)
 
     # -0.0 is not supported in SQL, change to 0.0
