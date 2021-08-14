@@ -41,13 +41,15 @@ def get_connection():
     if connection is None:
         connection = pymysql.connect(
             host=os.environ.get("MYSQL_HOST", "localhost"),
-            password=os.environ.get("MYSQL_PASSWORD"),
+            password=os.environ["MYSQL_PASSWORD"],
             charset="utf8mb4",
         )
         cursor = connection.cursor()
         try:
             cursor.execute("SELECT VERSION()")
-            version = cursor.fetchone()[0]
+            row = cursor.fetchone()
+            assert row is not None
+            version = row[0]
         finally:
             cursor.close()
         assert "MariaDB" in version
@@ -61,7 +63,7 @@ def check_against_db(dicty, byte_string):
         # Basic validity check
         cursor.execute("SELECT COLUMN_CHECK(%s) AS r", (byte_string,))
         result = cursor.fetchone()[0]
-        assert result == 1, "MariaDB did not validate %s" % hexs(byte_string)
+        assert result == 1, f"MariaDB did not validate {hexs(byte_string)!r}"
         # In depth check of re-creating with COLUMN_CREATE
         sql, params = column_create(dicty)
         sql = "SELECT " + sql + " AS v"
@@ -98,8 +100,7 @@ def column_create(dicty):
             sql.append("%s AS " + type_map[type(value)])
             params.append(value)
 
-    sql = "COLUMN_CREATE(" + ", ".join(sql) + ")"
-    return sql, params
+    return "COLUMN_CREATE(" + ", ".join(sql) + ")", params
 
 
 type_map = {date: "DATE", datetime: "DATETIME", time: "TIME"}

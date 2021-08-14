@@ -4,6 +4,7 @@ from math import isinf, isnan
 from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
+from typing import Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, Union
 
 DYN_COL_INT = 0
 DYN_COL_UINT = 1
@@ -43,7 +44,7 @@ class DynColNotSupported(Exception):
     """
 
 
-def pack(dicty):
+def pack(dicty: Dict[str, Any]) -> bytes:
     """
     Convert a mapping into the MariaDB dynamic columns format
     """
@@ -105,19 +106,19 @@ def pack(dicty):
                 buf.append(struct_pack("<H", val))
             else:
                 # data_offset + dtype, have to cut last byte
-                val = struct_pack("<" + coldir_size_code, val)
-                buf.append(val[:-1])
+                value = struct_pack("<" + coldir_size_code, val)
+                buf.append(value[:-1])
     buf.append(enc_names)
     buf.extend(data)
     return b"".join(buf)
 
 
-def name_order(name):
+def name_order(name: bytes) -> Tuple[int, bytes]:
     # Keys are ordered by name length then name
     return len(name), name
 
 
-def data_size(data):
+def data_size(data: List[bytes]) -> Tuple[int, str, bool]:
     data_len = sum(len(d) for d in data)
     if data_len < 0xFFF:
         return 0, "H", False
@@ -129,7 +130,7 @@ def data_size(data):
         raise ValueError("Too much data")
 
 
-def encode_int(value):
+def encode_int(value: int) -> Tuple[int, bytes]:
     if value < 0:
         dtype = DYN_COL_INT
         encvalue = -(value << 1) - 1
@@ -152,7 +153,7 @@ def encode_int(value):
     return dtype, struct_pack("B" * len(to_enc), *to_enc)
 
 
-def encode_float(value):
+def encode_float(value: float) -> Tuple[int, bytes]:
     if isnan(value) or isinf(value):
         raise DynColValueError(f"Float value not encodeable: {value}")
     encvalue = struct_pack("d", value)
@@ -164,11 +165,11 @@ def encode_float(value):
     return DYN_COL_DOUBLE, encvalue
 
 
-def encode_string(value):
+def encode_string(value: str) -> Tuple[int, bytes]:
     return DYN_COL_STRING, b"\x2D" + value.encode("utf-8")
 
 
-def encode_decimal(value):
+def encode_decimal(value: Decimal) -> NoReturn:
     raise DynColNotSupported("Can't encode Decimal values currently")
 
 
@@ -191,20 +192,20 @@ def encode_decimal(value):
 #     return DYN_COL_DECIMAL, header + bytes(buf)
 
 
-def encode_datetime(value):
+def encode_datetime(value: datetime) -> Tuple[int, bytes]:
     _, enc_date = encode_date(value)
     _, enc_time = encode_time(value)
     return DYN_COL_DATETIME, enc_date + enc_time
 
 
-def encode_date(value):
+def encode_date(value: date) -> Tuple[int, bytes]:
     # We don't need any validation since datetime.date is more limited than the
     # MySQL format
     val = value.day | value.month << 5 | value.year << 9
     return DYN_COL_DATE, struct_pack("I", val)[:-1]
 
 
-def encode_time(value):
+def encode_time(value: Union[datetime, time]) -> Tuple[int, bytes]:
     if value.microsecond > 0:
         val = (
             value.microsecond
@@ -218,11 +219,11 @@ def encode_time(value):
         return DYN_COL_TIME, struct_pack("I", val)[:3]
 
 
-def encode_dict(value):
+def encode_dict(value: Dict[str, Any]) -> Tuple[int, bytes]:
     return DYN_COL_DYNCOL, pack(value)
 
 
-ENCODE_FUNCS = {
+ENCODE_FUNCS: Dict[Type[Any], Callable[[Any], Tuple[int, bytes]]] = {
     int: encode_int,
     date: encode_date,
     datetime: encode_datetime,
@@ -234,10 +235,13 @@ ENCODE_FUNCS = {
 }
 
 
-def unpack(buf):
+def unpack(buf: bytes) -> Dict[str, Any]:
     """
     Convert MariaDB dynamic columns data in a byte string into a dict
     """
+    flags: int
+    column_count: int
+    len_names: int
     flags, column_count, len_names = struct_unpack_from("<BHH", buf)
     data_offset_code, coldata_size, data_offset_mask = decode_data_size(flags)
     if (flags & 0xFC) != 4:
@@ -256,9 +260,11 @@ def unpack(buf):
     names = {}
     values = {}
 
-    last_name_offset = None
-    last_data_offset = None
-    last_dtype = None
+    last_name_offset: Optional[int] = None
+    last_data_offset: Optional[int] = None
+    last_dtype: Optional[int] = None
+    name_offset: int
+    data_offset_dtype: int
 
     for i in range(column_count):
         if coldata_size % 2 == 0:
@@ -287,18 +293,20 @@ def unpack(buf):
 
         #
         if last_data_offset is not None:
+            assert last_dtype is not None
             values[i - 1] = decode(last_dtype, data[last_data_offset:data_offset])
         last_data_offset = data_offset
         last_dtype = dtype
 
     names[column_count - 1] = enc_names[last_name_offset:].decode("utf-8")
+    assert last_dtype is not None
     values[column_count - 1] = decode(last_dtype, data[last_data_offset:])
 
     # join data and names
     return {names[i]: values[i] for i in range(column_count)}
 
 
-def decode_data_size(flags):
+def decode_data_size(flags: int) -> Tuple[str, int, int]:
     t = flags & 0x03
     if t == 0:
         return "H", 4, 0xFFFF
@@ -310,7 +318,7 @@ def decode_data_size(flags):
         raise ValueError("Unknown dynamic columns format")
 
 
-def decode(dtype, encvalue):
+def decode(dtype: int, encvalue: bytes) -> Any:
     try:
         decode_func = DECODE_FUNCS[dtype]
     except KeyError:
@@ -318,7 +326,7 @@ def decode(dtype, encvalue):
     return decode_func(encvalue)
 
 
-def decode_int(encvalue):
+def decode_int(encvalue: bytes) -> int:
     value = 0
     for i, b in enumerate(bytearray(encvalue)):
         value += b << (8 * i)
@@ -328,17 +336,17 @@ def decode_int(encvalue):
         return value >> 1
 
 
-def decode_uint(encvalue):
+def decode_uint(encvalue: bytes) -> int:
     (value,) = struct_unpack("Q", encvalue)
     return value
 
 
-def decode_double(encvalue):
+def decode_double(encvalue: bytes) -> float:
     (value,) = struct_unpack("d", encvalue)
     return value
 
 
-def decode_string(encvalue):
+def decode_string(encvalue: bytes) -> str:
     if not encvalue.startswith((b"\x21", b"\x2D")):
         raise DynColNotSupported(
             "Can only decode strings with MySQL charsets utf8 or utf8mb4"
@@ -346,7 +354,7 @@ def decode_string(encvalue):
     return encvalue[1:].decode("utf-8")
 
 
-def decode_decimal(encvalue):
+def decode_decimal(encvalue: bytes) -> NoReturn:
     raise DynColNotSupported("Can't decode Decimal values currently")
 
 
@@ -361,18 +369,18 @@ def decode_decimal(encvalue):
 #     return Decimal(str(intg) + '.' + str(frac))
 
 
-def decode_datetime(encvalue):
+def decode_datetime(encvalue: bytes) -> datetime:
     d = decode_date(encvalue[:3])
     t = decode_time(encvalue[3:])
     return datetime.combine(d, t)
 
 
-def decode_date(encvalue):
+def decode_date(encvalue: bytes) -> date:
     (val,) = struct_unpack("I", encvalue + b"\x00")
     return date(day=val & 0x1F, month=(val >> 5) & 0xF, year=(val >> 9))
 
 
-def decode_time(encvalue):
+def decode_time(encvalue: bytes) -> time:
     if len(encvalue) == 6:
         (val,) = struct_unpack("Q", encvalue + b"\x00\x00")
         return time(
@@ -391,7 +399,7 @@ def decode_time(encvalue):
         )
 
 
-DECODE_FUNCS = {
+DECODE_FUNCS: Dict[int, Callable[[bytes], Any]] = {
     DYN_COL_INT: decode_int,
     DYN_COL_UINT: decode_uint,
     DYN_COL_DOUBLE: decode_double,
