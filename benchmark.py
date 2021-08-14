@@ -3,11 +3,12 @@ import io
 import sys
 import time
 from contextlib import contextmanager
+from typing import IO, Any, Callable, ContextManager, Generator, List
 
 from tests import base, test_mariadb_dyncol
 
 
-def main():
+def main() -> None:
     nruns = 1000
     base.check_against_db = lambda *a, **kw: 0
 
@@ -28,7 +29,7 @@ def main():
     )
 
 
-def get_test_funcs():
+def get_test_funcs() -> List[Callable[[], None]]:
     funcs = []
     for name in dir(test_mariadb_dyncol):
         if not name.startswith("test_"):
@@ -46,7 +47,7 @@ def get_test_funcs():
 
 
 @contextmanager
-def captured_output(stream_name):
+def captured_output(stream_name: str) -> Generator[IO[Any], None, None]:
     """Return a context manager used by captured_stdout/stdin/stderr
     that temporarily replaces the sys stream *stream_name* with a StringIO.
 
@@ -60,7 +61,7 @@ def captured_output(stream_name):
         setattr(sys, stream_name, orig_stdout)
 
 
-def captured_stdout():
+def captured_stdout() -> ContextManager[IO[Any]]:
     """Capture the output of sys.stdout:
 
     with captured_stdout() as stdout:

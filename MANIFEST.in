@@ -5,6 +5,7 @@ prune requirements
 include HISTORY.rst
 include LICENSE
 include README.rst
+include src/mariadb_dyncol/py.typed
 exclude .editorconfig
 exclude .pre-commit-config.yaml
 exclude benchmark.py
