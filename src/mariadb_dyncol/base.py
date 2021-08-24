@@ -4,7 +4,22 @@ from math import isinf, isnan
 from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
-from typing import Any, Callable, Dict, List, NoReturn, Optional, Tuple, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import NoReturn
+else:
+    NoReturn = None
 
 DYN_COL_INT = 0
 DYN_COL_UINT = 1
