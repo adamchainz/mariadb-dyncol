@@ -10,9 +10,9 @@ attrs==21.2.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.20.1 \
-    --hash=sha256:1057f8f27a9f3e1eac341502ea4a43f5045161f797bb661e176a67b77c5b1795 \
-    --hash=sha256:972d5ec98024e26f192202cf28aa68c9ec04be96227fa6d37744fcdb2047976f
+hypothesis==6.22.0 \
+    --hash=sha256:3c297228cfea7665b10afccb6a7c3e509c2bc4b477bdbe89e00080280368eca7 \
+    --hash=sha256:861452dc2b9ef63a7f8f7477af3d086ae3788ef444ee6de1377923a5d5ba6dc4
     # via -r requirements.in
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
