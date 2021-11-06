@@ -10,9 +10,9 @@ attrs==21.2.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.24.1 \
-    --hash=sha256:1e6dedc90cf0776ffa7982c3441824c3ea16cf8db79dbd47aa2df56065923450 \
-    --hash=sha256:ecbf7197ef85f0024b8c3dc947cfbf8296a5d1e6138562fc2f04d71ac9a96333
+hypothesis==6.24.2 \
+    --hash=sha256:4030f88ae0a8d3339a41dd7589c78d3ba0a3a270f729c12aceddaea7c60b224b \
+    --hash=sha256:f6b7b3b693fe00121a6c9edc04bedf6c48a75ea5ab02251e6023c4357a5369a5
     # via -r requirements.in
 importlib-metadata==4.8.1 \
     --hash=sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15 \
@@ -33,9 +33,9 @@ pluggy==1.0.0 \
     --hash=sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159 \
     --hash=sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3
     # via pytest
-py==1.10.0 \
-    --hash=sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3 \
-    --hash=sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a
+py==1.11.0 \
+    --hash=sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719 \
+    --hash=sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378
     # via pytest
 pymysql==1.0.2 \
     --hash=sha256:41fc3a0c5013d5f039639442321185532e3e2c8924687abe6537de157d403641 \
