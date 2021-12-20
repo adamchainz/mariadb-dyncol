@@ -10,13 +10,13 @@ attrs==21.2.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.30.0 \
-    --hash=sha256:6d81d409b4a1a3ff9458de5f2cf7ee37b1dd51473aacc79f257c62e2369a5fd7 \
-    --hash=sha256:feaa4c1aae9312b3b04a528ca0454e2e28b02b3a677f8ea4400894d4f8a04b2e
+hypothesis==6.31.6 \
+    --hash=sha256:d54be6a80b160ad5ea4209b01a0d72e31d910510ed7142fa9907861911800771 \
+    --hash=sha256:fbd31da5174f3da8d062017302071967b239a1b397d0e3181a44d43346bc6def
     # via -r requirements.in
-importlib-metadata==4.8.2 \
-    --hash=sha256:53ccfd5c134223e497627b9815d5030edf77d2ed573922f7a0b8f8bb81a1c100 \
-    --hash=sha256:75bdec14c397f528724c1bfd9709d660b33a4d2e77387a3358f20b848bb5e5fb
+importlib-metadata==4.10.0 \
+    --hash=sha256:92a8b58ce734b2a4494878e0ecf7d79ccd7a128b5fc6014c401e0b61f006f0f6 \
+    --hash=sha256:b7cf7d3fef75f1e4c80a96ca660efbd51473d7e8f39b5ab9210febc7809012a4
     # via
     #   pluggy
     #   pytest
