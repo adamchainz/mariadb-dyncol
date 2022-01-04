@@ -4,15 +4,15 @@
 #
 #    requirements/compile.py
 #
-attrs==21.2.0 \
-    --hash=sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1 \
-    --hash=sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb
+attrs==21.4.0 \
+    --hash=sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4 \
+    --hash=sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.31.6 \
-    --hash=sha256:d54be6a80b160ad5ea4209b01a0d72e31d910510ed7142fa9907861911800771 \
-    --hash=sha256:fbd31da5174f3da8d062017302071967b239a1b397d0e3181a44d43346bc6def
+hypothesis==6.34.1 \
+    --hash=sha256:3cae408a92917fe288b0932eb3bb758f1585bf8b6e1d4ca4a666a2835c707db3 \
+    --hash=sha256:5002ce1f27fd94b53b0046ac7d20dab17fd74ebc6c90d401979588eadc46f84e
     # via -r requirements.in
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
