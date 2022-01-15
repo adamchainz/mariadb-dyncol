@@ -10,9 +10,9 @@ attrs==21.4.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.34.1 \
-    --hash=sha256:3cae408a92917fe288b0932eb3bb758f1585bf8b6e1d4ca4a666a2835c707db3 \
-    --hash=sha256:5002ce1f27fd94b53b0046ac7d20dab17fd74ebc6c90d401979588eadc46f84e
+hypothesis==6.35.0 \
+    --hash=sha256:b51d1cbfd5c5d38b59435f695a1ff790c5fa7600baa59eba202a7bf8498d9043 \
+    --hash=sha256:ce3961fff61e7353d022608788cbc9876c293d2468749eeba27511adc9565131
     # via -r requirements.in
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
@@ -44,9 +44,9 @@ pytest==6.2.5 \
     # via
     #   -r requirements.in
     #   pytest-randomly
-pytest-randomly==3.10.3 \
-    --hash=sha256:22154cdcff7ba44e0599596490e6b75278ca973a33812ea6a54bf14d0b042ef1 \
-    --hash=sha256:b05a7a45f54cae2b5095752c6a10cb559df84448421b0420ae492dd2fb1727ef
+pytest-randomly==3.11.0 \
+    --hash=sha256:9f013b8c1923130f3d0a286fde56e1fc52cfb3547b8eedf2765c460cee979c7f \
+    --hash=sha256:a3c680d2b8150cf766311a80a1f92da64c3dd819045cda834fbf1b0ac4891610
     # via -r requirements.in
 pytz==2021.3 \
     --hash=sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c \
