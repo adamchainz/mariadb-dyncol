@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+from __future__ import annotations
+
 import io
 import sys
 import time
 from contextlib import contextmanager
-from typing import IO, Any, Callable, ContextManager, Generator, List
+from typing import IO, Any, Callable, ContextManager, Generator
 
 from tests import base, test_mariadb_dyncol
 
@@ -29,7 +31,7 @@ def main() -> None:
     )
 
 
-def get_test_funcs() -> List[Callable[[], None]]:
+def get_test_funcs() -> list[Callable[[], None]]:
     funcs = []
     for name in dir(test_mariadb_dyncol):
         if not name.startswith("test_"):

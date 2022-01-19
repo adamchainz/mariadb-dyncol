@@ -1,20 +1,12 @@
+from __future__ import annotations
+
 from datetime import date, datetime, time
 from decimal import Decimal
 from math import isinf, isnan
 from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import NoReturn
@@ -59,7 +51,7 @@ class DynColNotSupported(Exception):
     """
 
 
-def pack(dicty: Dict[str, Any]) -> bytes:
+def pack(dicty: dict[str, Any]) -> bytes:
     """
     Convert a mapping into the MariaDB dynamic columns format
     """
@@ -128,12 +120,12 @@ def pack(dicty: Dict[str, Any]) -> bytes:
     return b"".join(buf)
 
 
-def name_order(name: bytes) -> Tuple[int, bytes]:
+def name_order(name: bytes) -> tuple[int, bytes]:
     # Keys are ordered by name length then name
     return len(name), name
 
 
-def data_size(data: List[bytes]) -> Tuple[int, str, bool]:
+def data_size(data: list[bytes]) -> tuple[int, str, bool]:
     data_len = sum(len(d) for d in data)
     if data_len < 0xFFF:
         return 0, "H", False
@@ -145,7 +137,7 @@ def data_size(data: List[bytes]) -> Tuple[int, str, bool]:
         raise ValueError("Too much data")
 
 
-def encode_int(value: int) -> Tuple[int, bytes]:
+def encode_int(value: int) -> tuple[int, bytes]:
     if value < 0:
         dtype = DYN_COL_INT
         encvalue = -(value << 1) - 1
@@ -168,7 +160,7 @@ def encode_int(value: int) -> Tuple[int, bytes]:
     return dtype, struct_pack("B" * len(to_enc), *to_enc)
 
 
-def encode_float(value: float) -> Tuple[int, bytes]:
+def encode_float(value: float) -> tuple[int, bytes]:
     if isnan(value) or isinf(value):
         raise DynColValueError(f"Float value not encodeable: {value}")
     encvalue = struct_pack("d", value)
@@ -180,7 +172,7 @@ def encode_float(value: float) -> Tuple[int, bytes]:
     return DYN_COL_DOUBLE, encvalue
 
 
-def encode_string(value: str) -> Tuple[int, bytes]:
+def encode_string(value: str) -> tuple[int, bytes]:
     return DYN_COL_STRING, b"\x2D" + value.encode("utf-8")
 
 
@@ -207,20 +199,20 @@ def encode_decimal(value: Decimal) -> NoReturn:
 #     return DYN_COL_DECIMAL, header + bytes(buf)
 
 
-def encode_datetime(value: datetime) -> Tuple[int, bytes]:
+def encode_datetime(value: datetime) -> tuple[int, bytes]:
     _, enc_date = encode_date(value)
     _, enc_time = encode_time(value)
     return DYN_COL_DATETIME, enc_date + enc_time
 
 
-def encode_date(value: date) -> Tuple[int, bytes]:
+def encode_date(value: date) -> tuple[int, bytes]:
     # We don't need any validation since datetime.date is more limited than the
     # MySQL format
     val = value.day | value.month << 5 | value.year << 9
     return DYN_COL_DATE, struct_pack("I", val)[:-1]
 
 
-def encode_time(value: Union[datetime, time]) -> Tuple[int, bytes]:
+def encode_time(value: datetime | time) -> tuple[int, bytes]:
     if value.microsecond > 0:
         val = (
             value.microsecond
@@ -234,11 +226,11 @@ def encode_time(value: Union[datetime, time]) -> Tuple[int, bytes]:
         return DYN_COL_TIME, struct_pack("I", val)[:3]
 
 
-def encode_dict(value: Dict[str, Any]) -> Tuple[int, bytes]:
+def encode_dict(value: dict[str, Any]) -> tuple[int, bytes]:
     return DYN_COL_DYNCOL, pack(value)
 
 
-ENCODE_FUNCS: Dict[Type[Any], Callable[[Any], Tuple[int, bytes]]] = {
+ENCODE_FUNCS: dict[type[Any], Callable[[Any], tuple[int, bytes]]] = {
     int: encode_int,
     date: encode_date,
     datetime: encode_datetime,
@@ -250,7 +242,7 @@ ENCODE_FUNCS: Dict[Type[Any], Callable[[Any], Tuple[int, bytes]]] = {
 }
 
 
-def unpack(buf: bytes) -> Dict[str, Any]:
+def unpack(buf: bytes) -> dict[str, Any]:
     """
     Convert MariaDB dynamic columns data in a byte string into a dict
     """
@@ -275,9 +267,9 @@ def unpack(buf: bytes) -> Dict[str, Any]:
     names = {}
     values = {}
 
-    last_name_offset: Optional[int] = None
-    last_data_offset: Optional[int] = None
-    last_dtype: Optional[int] = None
+    last_name_offset: int | None = None
+    last_data_offset: int | None = None
+    last_dtype: int | None = None
     name_offset: int
     data_offset_dtype: int
 
@@ -321,7 +313,7 @@ def unpack(buf: bytes) -> Dict[str, Any]:
     return {names[i]: values[i] for i in range(column_count)}
 
 
-def decode_data_size(flags: int) -> Tuple[str, int, int]:
+def decode_data_size(flags: int) -> tuple[str, int, int]:
     t = flags & 0x03
     if t == 0:
         return "H", 4, 0xFFFF
@@ -414,7 +406,7 @@ def decode_time(encvalue: bytes) -> time:
         )
 
 
-DECODE_FUNCS: Dict[int, Callable[[bytes], Any]] = {
+DECODE_FUNCS: dict[int, Callable[[bytes], Any]] = {
     DYN_COL_INT: decode_int,
     DYN_COL_UINT: decode_uint,
     DYN_COL_DOUBLE: decode_double,
