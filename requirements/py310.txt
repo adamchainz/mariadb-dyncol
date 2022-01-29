@@ -10,9 +10,9 @@ attrs==21.4.0 \
     # via
     #   hypothesis
     #   pytest
-hypothesis==6.35.0 \
-    --hash=sha256:b51d1cbfd5c5d38b59435f695a1ff790c5fa7600baa59eba202a7bf8498d9043 \
-    --hash=sha256:ce3961fff61e7353d022608788cbc9876c293d2468749eeba27511adc9565131
+hypothesis==6.36.0 \
+    --hash=sha256:2b9c56faa067d660f0802679689f825bf142eec8261ab9e2e6ea916b1d8278a1 \
+    --hash=sha256:fa9f845b06199ea87e68c6da04a609ff46e381b5d542351184790d54eaca144c
     # via -r requirements.in
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
@@ -34,9 +34,9 @@ pymysql==1.0.2 \
     --hash=sha256:41fc3a0c5013d5f039639442321185532e3e2c8924687abe6537de157d403641 \
     --hash=sha256:816927a350f38d56072aeca5dfb10221fe1dc653745853d30a216637f5d7ad36
     # via -r requirements.in
-pyparsing==3.0.6 \
-    --hash=sha256:04ff808a5b90911829c55c4e26f75fa5ca8a2f5f36aa3a51f68e27033341d3e4 \
-    --hash=sha256:d9bdec0013ef1eb5a84ab39a3b3868911598afa494f5faa038647101504e2b81
+pyparsing==3.0.7 \
+    --hash=sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea \
+    --hash=sha256:a6c06a88f252e6c322f65faf8f418b16213b51bdfaece0524c1c1bc30c63c484
     # via packaging
 pytest==6.2.5 \
     --hash=sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89 \
