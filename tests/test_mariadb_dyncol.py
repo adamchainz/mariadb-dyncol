@@ -63,12 +63,12 @@ def test_ulonglongmax():
 
 def test_integer_overflow():
     with pytest.raises(DynColValueError):
-        pack({"a": 2 ** 64})
+        pack({"a": 2**64})
 
 
 def test_integer_negative_overflow():
     with pytest.raises(DynColValueError):
-        pack({"a": -(2 ** 32)})
+        pack({"a": -(2**32)})
 
 
 def test_c_1():
@@ -147,7 +147,7 @@ def test_large_string_data_4096_as():
 @pytest.mark.slow
 def test_large_string_data_2():
     check(
-        input={"a": "a" * (2 ** 13), "b": 1},
+        input={"a": "a" * (2**13), "b": 1},
         expected_prefix=b"05020002000000030000010010000261622d6161",
     )
 
@@ -155,7 +155,7 @@ def test_large_string_data_2():
 @pytest.mark.slow
 def test_huge_string_data():
     check(
-        input={"a": "a" * (2 ** 20)},
+        input={"a": "a" * (2**20)},
         expected_prefix=b"0601000100000003000000612d616161",
     )
 
