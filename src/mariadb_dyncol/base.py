@@ -141,13 +141,13 @@ def encode_int(value: int) -> tuple[int, bytes]:
     if value < 0:
         dtype = DYN_COL_INT
         encvalue = -(value << 1) - 1
-        if value < -(2 ** 32 - 1):
+        if value < -(2**32 - 1):
             raise DynColValueError(f"int {value} out of range")
     else:
-        if value <= (2 ** 63 - 1):
+        if value <= (2**63 - 1):
             dtype = DYN_COL_INT
             encvalue = value << 1
-        elif value <= (2 ** 64 - 1):
+        elif value <= (2**64 - 1):
             dtype = DYN_COL_UINT
             encvalue = value
         else:

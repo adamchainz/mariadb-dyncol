@@ -22,8 +22,8 @@ from .base import check_against_db
 valid_keys = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(
     lambda key: len(key.encode("utf-8")) <= MAX_NAME_LENGTH
 )
-valid_ints = integers(min_value=-(2 ** 31 - 1), max_value=(2 ** 64 - 1)).filter(
-    lambda i: abs(i) <= (2 ** 31 - 1) or 0 <= i <= 2 ** 64 - 1
+valid_ints = integers(min_value=-(2**31 - 1), max_value=(2**64 - 1)).filter(
+    lambda i: abs(i) <= (2**31 - 1) or 0 <= i <= 2**64 - 1
 )
 valid_floats = floats().filter(lambda f: not isnan(f) and not isinf(f))
 valid_datetimes = datetimes()
