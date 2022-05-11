@@ -1,4 +1,3 @@
-exclude benchmark.py
 include HISTORY.rst
 include LICENSE
 include pyproject.toml
