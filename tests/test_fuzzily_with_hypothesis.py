@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from math import isinf, isnan
+from typing import Any
 
 from hypothesis import assume, given
 from hypothesis.strategies import (
@@ -31,7 +32,7 @@ valid_dates = dates()
 valid_times = times()
 
 
-def valid_dictionaries(keys, values):
+def valid_dictionaries(keys: Any, values: Any) -> Any:
     return dictionaries(keys, values).filter(
         lambda data: (
             sum(len(key.encode("utf-8")) for key in data) <= MAX_TOTAL_NAME_LENGTH
@@ -39,7 +40,7 @@ def valid_dictionaries(keys, values):
     )
 
 
-def check_data(data):
+def check_data(data: dict[str, Any]) -> None:
     packed = pack(data)
     check_against_db(data, packed)
     assert unpack(packed) == data
