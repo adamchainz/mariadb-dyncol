@@ -12,7 +12,11 @@ from tests import base, test_mariadb_dyncol
 
 def main() -> None:
     nruns = 1000
-    base.check_against_db = lambda *a, **kw: 0
+
+    def check_against_db(*args: Any, **kwargs: Any) -> None:
+        ...
+
+    base.check_against_db = check_against_db
 
     test_funcs = get_test_funcs()
     print("Running benchmark", file=sys.stderr)

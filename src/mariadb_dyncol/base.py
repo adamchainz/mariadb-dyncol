@@ -344,11 +344,13 @@ def decode_int(encvalue: bytes) -> int:
 
 
 def decode_uint(encvalue: bytes) -> int:
+    value: int
     (value,) = struct_unpack("Q", encvalue)
     return value
 
 
 def decode_double(encvalue: bytes) -> float:
+    value: float
     (value,) = struct_unpack("d", encvalue)
     return value
 

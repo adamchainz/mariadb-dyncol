@@ -3,6 +3,7 @@ from __future__ import annotations
 import binascii
 import os
 from datetime import date, datetime, time
+from typing import Any
 
 import pymysql
 
@@ -12,7 +13,11 @@ hexs = binascii.hexlify
 unhexs = binascii.unhexlify
 
 
-def check(input, expected=None, expected_prefix=None):
+def check(
+    input: dict[str, Any],
+    expected: bytes | None = None,
+    expected_prefix: bytes | None = None,
+) -> None:
     if expected is not None:
         assert expected_prefix is None
 
@@ -38,7 +43,7 @@ def check(input, expected=None, expected_prefix=None):
 connection = None
 
 
-def get_connection():
+def get_connection() -> Any:
     global connection
     if connection is None:
         connection = pymysql.connect(
@@ -58,7 +63,7 @@ def get_connection():
     return connection
 
 
-def check_against_db(dicty, byte_string):
+def check_against_db(dicty: dict[str, Any], byte_string: bytes) -> None:
     connection = get_connection()
     cursor = connection.cursor()
     try:
@@ -76,13 +81,13 @@ def check_against_db(dicty, byte_string):
         cursor.close()
 
 
-def column_create(dicty):
+def column_create(dicty: dict[str, Any]) -> tuple[str, list[Any]]:
     # COLUMN_CREATE() with no args is invalid so hardcode empty dict
     if not dicty:
         return "COLUMN_DELETE(COLUMN_CREATE('a', 1), 'a')", []
 
     sql = []
-    params = []
+    params: list[Any] = []
     for key, value in dicty.items():
         sql.append("%s")
         params.append(key)
