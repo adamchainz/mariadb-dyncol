@@ -79,9 +79,13 @@ def test_times(data):
     check_data(data)
 
 
+def filter_recursive_values(children):
+    return valid_dictionaries(valid_keys, children)
+
+
 recursive_values = recursive(
     (valid_ints | valid_floats | text() | valid_datetimes | valid_dates | valid_times),
-    lambda children: valid_dictionaries(valid_keys, children),
+    filter_recursive_values,
 )
 
 
