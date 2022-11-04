@@ -5,9 +5,14 @@ import io
 import sys
 import time
 from contextlib import contextmanager
-from typing import IO, Any, Callable, ContextManager, Generator
+from typing import Any
+from typing import Callable
+from typing import ContextManager
+from typing import Generator
+from typing import IO
 
-from tests import base, test_mariadb_dyncol
+from tests import base
+from tests import test_mariadb_dyncol
 
 
 def main() -> None:

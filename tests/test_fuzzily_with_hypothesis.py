@@ -1,24 +1,26 @@
 from __future__ import annotations
 
-from math import isinf, isnan
+from math import isinf
+from math import isnan
 from typing import Any
 
-from hypothesis import assume, given
-from hypothesis.strategies import (
-    dates,
-    datetimes,
-    dictionaries,
-    floats,
-    integers,
-    recursive,
-    text,
-    times,
-)
-
-from mariadb_dyncol import DynColValueError, pack, unpack
-from mariadb_dyncol.base import MAX_NAME_LENGTH, MAX_TOTAL_NAME_LENGTH  # priv.
+from hypothesis import assume
+from hypothesis import given
+from hypothesis.strategies import dates
+from hypothesis.strategies import datetimes
+from hypothesis.strategies import dictionaries
+from hypothesis.strategies import floats
+from hypothesis.strategies import integers
+from hypothesis.strategies import recursive
+from hypothesis.strategies import text
+from hypothesis.strategies import times
 
 from .base import check_against_db
+from mariadb_dyncol import DynColValueError
+from mariadb_dyncol import pack
+from mariadb_dyncol import unpack
+from mariadb_dyncol.base import MAX_NAME_LENGTH
+from mariadb_dyncol.base import MAX_TOTAL_NAME_LENGTH
 
 valid_keys = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(
     lambda key: len(key.encode("utf-8")) <= MAX_NAME_LENGTH
