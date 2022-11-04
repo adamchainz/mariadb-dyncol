@@ -1,21 +1,22 @@
 from __future__ import annotations
 
-from datetime import date, datetime, time
+from datetime import date
+from datetime import datetime
+from datetime import time
 from decimal import Decimal
 
 import pytest
 
-from mariadb_dyncol import (
-    DynColLimitError,
-    DynColNotSupported,
-    DynColTypeError,
-    DynColValueError,
-    pack,
-    unpack,
-)
+from .base import check
+from .base import hexs
+from .base import unhexs
+from mariadb_dyncol import DynColLimitError
+from mariadb_dyncol import DynColNotSupported
+from mariadb_dyncol import DynColTypeError
+from mariadb_dyncol import DynColValueError
+from mariadb_dyncol import pack
+from mariadb_dyncol import unpack
 from mariadb_dyncol.base import MAX_NAME_LENGTH  # private but useful in tests
-
-from .base import check, hexs, unhexs
 
 
 def test_empty():

@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from datetime import date, datetime, time
+from datetime import date
+from datetime import datetime
+from datetime import time
 from decimal import Decimal
-from math import isinf, isnan
+from math import isinf
+from math import isnan
 from struct import pack as struct_pack
 from struct import unpack as struct_unpack
 from struct import unpack_from as struct_unpack_from
-from typing import TYPE_CHECKING, Any, Callable
+from typing import Any
+from typing import Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import NoReturn
