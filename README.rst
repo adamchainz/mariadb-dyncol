@@ -15,6 +15,15 @@ mariadb-dyncol
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
+Unmaintained (2022-12-07)
+-------------------------
+
+I stopped maintaining this package as it has never been popular.
+Since MariaDB added JSON support, it’s better to use that for portability, rather than the custom dynamic columns format.
+If you’d like to take over maintenance of this package please email me.
+
+----
+
 Pack/unpack Python ``dict``\s into/out of MariaDB's **Dynamic Columns** format.
 
 A quick example:
